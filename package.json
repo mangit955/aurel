@@ -5,12 +5,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev:web": "pnpm --filter @aurel/web dev",
-    "dev:worker": "pnpm --filter @aurel/worker start",
+    "dev:web": "pnpm --filter web dev",
+    "dev:worker": "pnpm --filter worker start",
     "test": "echo \"No tests configured yet\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.26.0"
+  "packageManager": "pnpm@10.26.0",
+  "devDependencies": {
+    "@types/node": "^20.19.33",
+    "@types/react": "^19.2.14",
+    "eslint": "^9.39.3",
+    "prettier": "^3.8.1"
+  }
 }

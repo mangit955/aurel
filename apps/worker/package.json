@@ -1,8 +1,11 @@
 {
-  "name": "@aurel/worker",
+  "name": "worker",
   "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "node index.js"
+  },
+  "dependencies": {
+    "@aurel/db": "workspace:*"
   }
 }
