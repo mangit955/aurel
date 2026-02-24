@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  name      String?
+  image     String?
+  workflows Workflow[]
+  createdAt DateTime   @default(now())
+}
+
+model Workflow {
+  id            String      @id @default(cuid())
+  name          String
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  nodes         Json // React Flow nodes array
+  edges         Json // React Flow edges array
+  active        Boolean     @default(false)
+  webhookSecret String      @default(cuid()) // for webhook URL security
+  executions    Execution[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Execution {
+  id         String    @id @default(cuid())
+  workflowId String
+  workflow   Workflow  @relation(fields: [workflowId], references: [id])
+  status     String // "queued" | "running" | "success" | "failed"
+  input      Json // what triggered this run — CRITICAL for debugging
+  logs       Json // per-node results array
+  startedAt  DateTime  @default(now())
+  endedAt    DateTime?
+}
