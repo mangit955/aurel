@@ -10,11 +10,13 @@
   },
   "dependencies": {
     "@aurel/db": "workspace:*",
+    "@xyflow/react": "^12.10.1",
     "next": "16.1.6",
     "next-auth": "5.0.0-beta.30",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "swr": "^2.4.0"
+    "swr": "^2.4.0",
+    "zustand": "^5.0.11"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
