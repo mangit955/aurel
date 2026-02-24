@@ -1,0 +1,16 @@
+{
+  "name": "aurel-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev:web": "pnpm --filter @aurel/web dev",
+    "dev:worker": "pnpm --filter @aurel/worker start",
+    "test": "echo \"No tests configured yet\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.26.0"
+}
