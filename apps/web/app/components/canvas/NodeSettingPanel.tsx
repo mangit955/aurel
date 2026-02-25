@@ -15,16 +15,18 @@ import { Button } from "@/app/components/ui/button";
 import { useState, useEffect } from "react";
 
 export function NodeSettingsPanel() {
-  const selectedNodeId = useWorkflowStore((s) => s.selectedNodeId);
-  const selectNode = useWorkflowStore((s) => s.selectNode);
+  const activeSettingsNodeId = useWorkflowStore((s) => s.activeSettingsNodeId);
+  const setActiveSettingsNode = useWorkflowStore(
+    (s) => s.setActiveSettingsNode,
+  );
   const nodes = useWorkflowStore((s) => s.nodes);
   const updateNodeData = useWorkflowStore((s) => s.updateNodeData);
 
   const [label, setLabel] = useState("");
 
-  const node = nodes.find((n) => n.id === selectedNodeId);
+  const node = nodes.find((n) => n.id === activeSettingsNodeId);
 
-  // Populate form with current data when selectedNodeId changes
+  // Populate form with current data when activeSettingsNodeId changes
   useEffect(() => {
     if (node) {
       setLabel(typeof node.data?.label === "string" ? node.data.label : "");
@@ -36,18 +38,16 @@ export function NodeSettingsPanel() {
   const handleSave = () => {
     if (!node) return;
     updateNodeData(node.id, { label });
-    selectNode(null);
+    setActiveSettingsNode(null);
   };
 
   return (
     <Sheet
-      open={selectedNodeId !== null && !!node}
+      open={activeSettingsNodeId !== null && !!node}
       onOpenChange={(open) => {
         if (!open) {
-          selectNode(null);
+          setActiveSettingsNode(null);
         }
-        console.log("selectedNodeId:", selectedNodeId);
-        console.log("node:", node);
       }}
     >
       <SheetContent side="right">

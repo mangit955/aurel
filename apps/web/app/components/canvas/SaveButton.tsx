@@ -18,7 +18,10 @@ export function SaveButton({ workflowId }: { workflowId: string }) {
   };
 
   return (
-    <button className="btn btn-primary" onClick={saveWorkflow}>
+    <button
+      className="btn btn-primary bg-zinc-200 p-1 rounded-md cursor-pointer px-2 font-semibold"
+      onClick={saveWorkflow}
+    >
       Save
     </button>
   );

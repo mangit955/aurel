@@ -12,19 +12,23 @@ const createNode = (type: string, x: number, y: number) => ({
 export function Toolbar() {
   const { nodes, setNodes } = useWorkflowStore();
 
-  const addNode = () => {
-    setNodes([
-      ...nodes,
-      createNode("default", Math.random() * 200, Math.random() * 200),
-    ]);
+  const addNode = (type: string) => {
+    const newNode = createNode(type, Math.random() * 400, Math.random() * 400);
+
+    setNodes([...nodes, newNode]);
   };
 
   return (
     <div className="space-x-2">
-      <button className="btn" onClick={addNode}>
+      <button className="btn" onClick={() => addNode("default")}>
         Add Node
       </button>
       {/* add more buttons for different node types later */}
+      <button onClick={() => addNode("webhookTrigger")}>Webhook</button>
+      <button onClick={() => addNode("httpRequest")}>HTTP</button>
+      <button onClick={() => addNode("setVariables")}>Set</button>
+      <button onClick={() => addNode("ifFilter")}>If</button>
+      <button onClick={() => addNode("sendEmail")}>Email</button>
     </div>
   );
 }
