@@ -6,6 +6,7 @@ import { Toolbar } from "@/app/components/Toolbar";
 import { SaveButton } from "@/app/components/canvas/SaveButton";
 import { FlowCanvas } from "@/app/components/canvas/FlowCanvas";
 import { useWorkflowStore } from "@/store/workflowStore";
+import { NodeSettingsPanel } from "@/app/components/canvas/NodeSettingPanel";
 
 type EditorClientProps = {
   workflowId: string;
@@ -18,7 +19,9 @@ export function EditorClient({
   initialNodes,
   initialEdges,
 }: EditorClientProps) {
-  const initializeWorkflow = useWorkflowStore((state) => state.initializeWorkflow);
+  const initializeWorkflow = useWorkflowStore(
+    (state) => state.initializeWorkflow,
+  );
 
   useEffect(() => {
     initializeWorkflow(initialNodes, initialEdges);
@@ -31,6 +34,7 @@ export function EditorClient({
         <SaveButton workflowId={workflowId} />
       </div>
       <FlowCanvas />
+      <NodeSettingsPanel />
     </div>
   );
 }
