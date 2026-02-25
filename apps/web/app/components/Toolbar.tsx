@@ -24,11 +24,36 @@ export function Toolbar() {
         Add Node
       </button>
       {/* add more buttons for different node types later */}
-      <button onClick={() => addNode("webhookTrigger")}>Webhook</button>
-      <button onClick={() => addNode("httpRequest")}>HTTP</button>
-      <button onClick={() => addNode("setVariables")}>Set</button>
-      <button onClick={() => addNode("ifFilter")}>If</button>
-      <button onClick={() => addNode("sendEmail")}>Email</button>
+      <button
+        onClick={() => addNode("webhookTrigger")}
+        className="bg-zinc-100 p-1 px-2 cursor-pointer rounded-md border"
+      >
+        Webhook
+      </button>
+      <button
+        onClick={() => addNode("httpRequest")}
+        className="bg-zinc-100 p-1 px-2 cursor-pointer rounded-md border"
+      >
+        HTTP
+      </button>
+      <button
+        onClick={() => addNode("setVariables")}
+        className="bg-zinc-100 p-1 px-2 cursor-pointer rounded-md border"
+      >
+        Set
+      </button>
+      <button
+        onClick={() => addNode("ifFilter")}
+        className="bg-zinc-100 p-1 px-2 cursor-pointer rounded-md border"
+      >
+        If / Filter
+      </button>
+      <button
+        onClick={() => addNode("sendEmail")}
+        className="bg-zinc-100 p-1 px-2 cursor-pointer rounded-md border"
+      >
+        Email
+      </button>
     </div>
   );
 }

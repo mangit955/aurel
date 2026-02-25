@@ -4,7 +4,9 @@ import { BaseNode } from "./BaseNode";
 export function EmailNode({ data }: any) {
   return (
     <BaseNode className="bg-red-100 border-red-300">
-      <div className="text-red-800 font-semibold">📧 Send Email</div>
+      <div className="text-red-800 font-semibold">
+        {data.label || "📧 Send Email"}
+      </div>
       <div className="text-xs text-red-700 truncate">
         {data.to || "No recipient"}
       </div>

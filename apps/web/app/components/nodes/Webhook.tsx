@@ -4,7 +4,9 @@ import { BaseNode } from "./BaseNode";
 export function WebhookNode({ data }: any) {
   return (
     <BaseNode className="bg-blue-100 border-blue-300">
-      <div className="text-blue-800 font-semibold">🚪 Webhook Trigger</div>
+      <div className="text-blue-800 font-semibold">
+        {data.label || "🚪 Webhook Trigger"}
+      </div>
       <div className="text-xs text-blue-700 truncate">
         {data.webhookUrl || "No URL set"}
       </div>
