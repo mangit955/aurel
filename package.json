@@ -18,5 +18,9 @@
     "@types/react": "^19.2.14",
     "eslint": "^9.39.3",
     "prettier": "^3.8.1"
+  },
+  "dependencies": {
+    "bullmq": "^5.70.1",
+    "ioredis": "^5.9.3"
   }
 }

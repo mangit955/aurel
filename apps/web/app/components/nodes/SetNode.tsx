@@ -4,7 +4,9 @@ import { BaseNode } from "./BaseNode";
 export function SetNode({ data }: any) {
   return (
     <BaseNode className="bg-purple-100 border-purple-300">
-      <div className="text-purple-800 font-semibold">📌 Set Variables</div>
+      <div className="text-purple-800 font-semibold">
+        {data.label || "📌 Set Variables"}
+      </div>
       <div className="text-xs text-purple-700">
         {data.variables?.length ?? 0} variables
       </div>

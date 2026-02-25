@@ -37,7 +37,7 @@ export function Toolbar() {
         HTTP
       </button>
       <button
-        onClick={() => addNode("setVariables")}
+        onClick={() => addNode("setVariable")}
         className="bg-zinc-100 p-1 px-2 cursor-pointer rounded-md border"
       >
         Set

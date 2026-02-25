@@ -6,7 +6,7 @@ import { WebhookNode } from "../nodes/Webhook";
 import { HttpNode } from "../nodes/HttpRequest";
 import { EmailNode } from "../nodes/SendEmail";
 import { IfNode } from "../nodes/Filter";
-import { SetNode } from "../nodes/SetVariable";
+import { SetNode } from "../nodes/SetNode";
 
 const nodeTypes = {
   webhookTrigger: WebhookNode,
