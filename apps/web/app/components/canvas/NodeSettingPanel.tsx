@@ -13,6 +13,7 @@ import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { Button } from "@/app/components/ui/button";
 import { useState, useEffect } from "react";
+import { TestEmailButton } from "../TestEmailButton";
 
 export function NodeSettingsPanel() {
   const activeSettingsNodeId = useWorkflowStore((s) => s.activeSettingsNodeId);
@@ -66,6 +67,9 @@ export function NodeSettingsPanel() {
                   onChange={(e) => setLabel(e.target.value)}
                 />
               </div>
+              {node.type === "sendEmail" && (
+                <TestEmailButton nodeId={node.id} />
+              )}
             </div>
 
             <SheetFooter className="mt-6 flex justify-between">

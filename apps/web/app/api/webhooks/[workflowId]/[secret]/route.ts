@@ -33,10 +33,6 @@ export async function POST(
     },
   });
 
-  console.log("workflowId:", workflowId);
-  console.log("secret:", secret);
-  console.log("workflow:", workflow);
-
   // Enqueue worker job with BullMQ
   await workflowQueue.add("run-workflow", {
     executionId: execution.id,
