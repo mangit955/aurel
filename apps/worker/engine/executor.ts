@@ -24,6 +24,16 @@ export async function executeWorkflow(
 
   if (!workflow) throw new Error("Workflow not found");
 
+  await prisma.execution.update({
+    where: { id: executionId },
+    data: {
+      status: "running",
+      // optional: clear logs if rerunning
+      logs: [],
+      endedAt: null,
+    },
+  });
+
   const nodes = workflow.nodes as any[];
   const edges = workflow.edges as any[];
   const logs: NodeLog[] = [];
@@ -43,16 +53,13 @@ export async function executeWorkflow(
       sourceHandle: edge.sourceHandle,
     });
   });
-
+  console.log(
+    "All node types:",
+    nodes.map((n) => n.type),
+  );
   // Find start node
   const startNode = nodes.find((n) => n.type === "webhookTrigger");
   if (!startNode) throw new Error("No trigger node found");
-
-  // Update execution to running
-  await prisma.execution.update({
-    where: { id: executionId },
-    data: { status: "running" },
-  });
 
   // BFS execution
   // Each queue item carries the output from its parent as input
@@ -73,7 +80,7 @@ export async function executeWorkflow(
 
       logs.push({
         nodeId: node.id,
-        nodeName: node.data.label,
+        nodeName: node.data?.label || node.type,
         status: "success",
         input,
         output,
@@ -95,7 +102,7 @@ export async function executeWorkflow(
     } catch (err: any) {
       logs.push({
         nodeId: node.id,
-        nodeName: node.data.label,
+        nodeName: node.data?.label || node.type,
         status: "failed",
         input,
         error: err.message,
@@ -107,7 +114,7 @@ export async function executeWorkflow(
         where: { id: executionId },
         data: {
           status: "failed",
-          logs,
+          logs: logs as any,
           endedAt: new Date(),
         },
       });
@@ -121,7 +128,7 @@ export async function executeWorkflow(
     where: { id: executionId },
     data: {
       status: "success",
-      logs,
+      logs: logs as any,
       endedAt: new Date(),
     },
   });

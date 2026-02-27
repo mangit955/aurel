@@ -2,8 +2,15 @@ import { Handle, Position } from "@xyflow/react";
 import { BaseNode } from "./BaseNode";
 
 export function EmailNode({ data }: any) {
+  const color =
+    data.executionStatus === "failed"
+      ? "bg-red-200"
+      : data.executionStatus === "success"
+        ? "bg-green-200"
+        : "bg-gray-100";
+
   return (
-    <BaseNode className="bg-red-100 border-red-300">
+    <BaseNode className={`bg-red-100 border-red-300 ${color}`}>
       <div className="text-red-800 font-semibold">
         {data.label || "📧 Send Email"}
       </div>

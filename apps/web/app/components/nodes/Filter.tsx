@@ -1,8 +1,16 @@
 import { Handle, Position } from "@xyflow/react";
 
 export function IfNode({ data }: any) {
+  // green for success, red for failed, gray for skipped
+  const color =
+    data.executionStatus === "failed"
+      ? "bg-red-200"
+      : data.executionStatus === "success"
+        ? "bg-green-200"
+        : "bg-gray-100";
+
   return (
-    <div className="p-2 bg-green-100 rounded shadow border w-40">
+    <div className={`p-2 rounded border shadow ${color}`}>
       <div className="font-bold text-sm">{data.label || "IF / Filter"}</div>
       <div className="text-xs text-gray-700 truncate">
         {data.field || "(field)"} {data.operator || "="} {data.value || ""}

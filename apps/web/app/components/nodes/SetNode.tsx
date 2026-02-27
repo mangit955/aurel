@@ -2,8 +2,15 @@ import { Handle, Position } from "@xyflow/react";
 import { BaseNode } from "./BaseNode";
 
 export function SetNode({ data }: any) {
+  const color =
+    data.executionStatus === "failed"
+      ? "bg-red-200"
+      : data.executionStatus === "success"
+        ? "bg-green-200"
+        : "bg-gray-100";
+
   return (
-    <BaseNode className="bg-purple-100 border-purple-300">
+    <BaseNode className={`bg-purple-100 border-purple-300 ${color}`}>
       <div className="text-purple-800 font-semibold">
         {data.label || "📌 Set Variables"}
       </div>

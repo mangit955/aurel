@@ -2,8 +2,15 @@ import { Handle, Position } from "@xyflow/react";
 import { BaseNode } from "./BaseNode";
 
 export function WebhookNode({ data }: any) {
+  const color =
+    data.executionStatus === "failed"
+      ? "bg-red-200"
+      : data.executionStatus === "success"
+        ? "bg-green-200"
+        : "bg-gray-100";
+
   return (
-    <BaseNode className="bg-blue-100 border-blue-300">
+    <BaseNode className={`bg-blue-100 border-blue-300 ${color}`}>
       <div className="text-blue-800 font-semibold">
         {data.label || "🚪 Webhook Trigger"}
       </div>
