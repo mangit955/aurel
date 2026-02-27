@@ -30,7 +30,7 @@ export function EditorClient({
   return (
     <div className="relative p-4">
       <div className="mb-4 flex items-center justify-between">
-        <Toolbar />
+        <Toolbar workflowId={workflowId} />
         <SaveButton workflowId={workflowId} />
       </div>
       <FlowCanvas />

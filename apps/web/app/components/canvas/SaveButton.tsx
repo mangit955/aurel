@@ -19,7 +19,7 @@ export function SaveButton({ workflowId }: { workflowId: string }) {
 
   return (
     <button
-      className="btn btn-primary bg-zinc-200 p-1 rounded-md cursor-pointer px-2 font-semibold"
+      className="btn btn-primary bg-zinc-200 p-1 text-zinc-800 rounded-md cursor-pointer px-2 font-semibold"
       onClick={saveWorkflow}
     >
       Save

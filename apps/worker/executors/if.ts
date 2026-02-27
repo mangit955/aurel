@@ -1,12 +1,26 @@
 export async function ifExecutor(node: any, input: any) {
   const { field, operator, value } = node.data;
-  const actual = input?.[field];
+
+  // Workflows commonly pass `{ status: 'success', data: { ... } }` between nodes.
+  // We need to unwrap it if it exists to get the real payload.
+  const payload = input?.data !== undefined ? input.data : input;
+
+  let actual = payload;
+  if (field) {
+    const path = String(field).split(".");
+    for (let part of path) {
+      actual = actual ? actual[part] : undefined;
+    }
+  }
 
   let pass = false;
 
   switch (operator) {
     case "equals":
-      pass = actual === value;
+    case "=":
+    case "==":
+    case "===":
+      pass = String(actual) === String(value);
       break;
 
     case "contains":
@@ -14,7 +28,13 @@ export async function ifExecutor(node: any, input: any) {
       break;
 
     case "greaterThan":
+    case ">":
       pass = Number(actual) > Number(value);
+      break;
+
+    case "lessThan":
+    case "<":
+      pass = Number(actual) < Number(value);
       break;
 
     case "exists":
@@ -22,11 +42,16 @@ export async function ifExecutor(node: any, input: any) {
       break;
 
     default:
-      throw new Error(`Unknown operator ${operator}`);
+      // If we don't know the operator, assume default condition depending on what makes sense,
+      // here we fallback to equals to avoid unhandled errors blocking the run completely.
+      pass = String(actual) === String(value);
   }
 
   return {
     status: "success",
-    data: { branch: pass ? "true" : "false" },
+    data: {
+      ...payload,
+      branch: pass ? "true" : "false",
+    },
   };
 }

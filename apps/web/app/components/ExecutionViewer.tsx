@@ -10,16 +10,21 @@ import { HttpNode } from "./nodes/HttpRequest";
 import { EmailNode } from "./nodes/SendEmail";
 import { IfNode } from "./nodes/Filter";
 import { SetNode } from "./nodes/SetNode";
+import ExecutionNode from "./execution/ExecutionNode";
 
 const nodeTypes = {
-  webhookTrigger: WebhookNode,
-  httpRequest: HttpNode,
-  setVariable: SetNode,
-  ifFilter: IfNode,
-  sendEmail: EmailNode,
+  executionNode: ExecutionNode,
 };
 
-const fetcher = (url: string) => fetch(url).then((r) => r.json());
+const fetcher = async (url: string) => {
+  const res = await fetch(url);
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("API Error Text:", text);
+    throw new Error(`API returned ${res.status}`);
+  }
+  return res.json();
+};
 
 export default function ExecutionViewer({
   executionId,
@@ -48,6 +53,7 @@ export default function ExecutionViewer({
         executionInput: log?.input,
         executionOutput: log?.output,
         executionError: log?.error,
+        label: node.data.label, // preserve label
       },
     };
   });
@@ -55,7 +61,10 @@ export default function ExecutionViewer({
   return (
     <div className="h-[80vh] w-full">
       <ReactFlow
-        nodes={decoratedNodes}
+        nodes={decoratedNodes.map((n: any) => ({
+          ...n,
+          type: "executionNode",
+        }))}
         edges={execution.workflow.edges}
         nodeTypes={nodeTypes}
         onNodeClick={(_, node) => setSelectedNode(node)}
@@ -66,7 +75,7 @@ export default function ExecutionViewer({
       </ReactFlow>
 
       {selectedNode && (
-        <div className="absolute right-4 top-4 p-4 bg-white shadow-lg border w-80">
+        <div className="absolute right-4 top-4 p-4 bg-card text-card-foreground shadow-lg border w-80">
           <h2 className="font-bold text-lg">{selectedNode.data.label}</h2>
 
           <p className="mt-2 text-sm">
@@ -74,25 +83,25 @@ export default function ExecutionViewer({
           </p>
           <hr className="my-2" />
 
-          <p className="text-xs">
+          <div className="text-xs">
             <b>Input:</b>{" "}
             <pre className="whitespace-pre-wrap text-xs">
               {JSON.stringify(selectedNode.data.executionInput, null, 2)}
             </pre>
-          </p>
+          </div>
 
-          <p className="text-xs mt-2">
+          <div className="text-xs mt-2">
             <b>Output:</b>{" "}
             <pre className="whitespace-pre-wrap text-xs">
               {JSON.stringify(selectedNode.data.executionOutput, null, 2)}
             </pre>
-          </p>
+          </div>
 
           {selectedNode.data.executionError && (
             <>
-              <p className="text-red-600 mt-2">
+              <div className="text-red-600 mt-2">
                 <b>Error:</b> {selectedNode.data.executionError}
-              </p>
+              </div>
             </>
           )}
         </div>

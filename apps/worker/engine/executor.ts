@@ -57,15 +57,21 @@ export async function executeWorkflow(
     "All node types:",
     nodes.map((n) => n.type),
   );
-  // Find start node
-  const startNode = nodes.find((n) => n.type === "webhookTrigger");
-  if (!startNode) throw new Error("No trigger node found");
+  // Find all root nodes (nodes with no incoming edges) to start execution
+  const targetNodeIds = new Set(edges.map((e) => e.target));
+  const startNodes = nodes.filter((n) => !targetNodeIds.has(n.id));
+
+  if (startNodes.length === 0) {
+    throw new Error(
+      "No starting nodes found in workflow (possible circular dependency with no entry point)",
+    );
+  }
 
   // BFS execution
   // Each queue item carries the output from its parent as input
-  const queue: { nodeId: string; input: any; sourceHandle?: string }[] = [
-    { nodeId: startNode.id, input: triggerData },
-  ];
+  let hasFailedNodes = false;
+  const queue: { nodeId: string; input: any; sourceHandle?: string }[] =
+    startNodes.map((node) => ({ nodeId: node.id, input: triggerData }));
 
   while (queue.length > 0) {
     const { nodeId, input } = queue.shift()!;
@@ -77,6 +83,10 @@ export async function executeWorkflow(
     try {
       const output = await executeNode(node, input);
       const duration = Date.now() - start;
+
+      if (output && output.status === "failed") {
+        throw new Error((output as any).error || "Node execution failed");
+      }
 
       logs.push({
         nodeId: node.id,
@@ -91,9 +101,10 @@ export async function executeWorkflow(
       const nextNodes = adjacency.get(nodeId) || [];
       nextNodes.forEach(({ targetId, sourceHandle }) => {
         // For IF node: only follow the branch matching the output
-        if (node.type === "ifNode") {
-          if (sourceHandle === output.data.branch) {
-            queue.push({ nodeId: targetId, input: output.data });
+        if (node.type === "ifNode" || node.type === "ifFilter") {
+          // Pass the ORIGINAL input along to the downstream nodes!
+          if (sourceHandle === (output as any).data?.branch) {
+            queue.push({ nodeId: targetId, input: input });
           }
         } else {
           queue.push({ nodeId: targetId, input: output });
@@ -109,7 +120,7 @@ export async function executeWorkflow(
         duration: Date.now() - start,
       });
 
-      // Save failed execution and stop
+      // Immediately mark execution as failed and STOP entire workflow
       await prisma.execution.update({
         where: { id: executionId },
         data: {
@@ -119,11 +130,17 @@ export async function executeWorkflow(
         },
       });
 
-      return; // stop execution
+      console.error(
+        "Workflow stopped due to node failure:",
+        node.id,
+        err.message,
+      );
+
+      throw new Error(err.message); // STOP execution completely
     }
   }
 
-  // All nodes succeeded
+  // Update DB execution status as success (if we reached here, no failure occurred)
   await prisma.execution.update({
     where: { id: executionId },
     data: {

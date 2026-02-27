@@ -5,7 +5,10 @@ export async function GET(
   req: Request,
   context: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await context.params;
+  const params = await context.params;
+  const { id } = params;
+
+  console.log("Fetching execution with ID:", id, "Type:", typeof id);
 
   const execution = await prisma.execution.findUnique({
     where: { id },

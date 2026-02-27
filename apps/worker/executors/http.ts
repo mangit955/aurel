@@ -1,44 +1,40 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios from "axios";
+import { AxiosRequestConfig } from "axios";
 
 export async function httpExecutor(node: any, input: any) {
-  const { method, url, headers, body } = node.data;
+  const url = node.data?.url;
+  const method = node.data?.method || "GET"; // ✅ default
+  const headers = node.data?.headers;
+  const body = node.data?.body;
+
+  console.log("HTTP node data:", node.data);
+
+  if (!url) {
+    throw new Error("URL is missing in HTTP node");
+  }
 
   try {
-    //Build axios config
     const config: AxiosRequestConfig = {
-      method: method as any,
+      method,
       url,
       headers,
       data: body,
       timeout: 10000,
-      validateStatus: (status) => true,
+      validateStatus: () => true,
     };
 
     const response = await axios(config);
 
     if (response.status >= 400) {
-      throw new Error(`HTTP error: ${response.status} ${response.statusText}`);
+      throw new Error(`HTTP error: ${response.status}`);
     }
 
     return {
       status: "success",
-      data: {
-        status: response.status,
-        data: response.data,
-        headers: response.headers,
-      },
+      data: response.data,
+      httpStatus: response.status,
     };
   } catch (error: any) {
-    if (error.response) {
-      return {
-        status: "failed",
-        error: "NO response received from server",
-      };
-    } else {
-      return {
-        status: "failed",
-        error: error.message,
-      };
-    }
+    throw new Error(error.message); // ✅ always throw
   }
 }

@@ -1,7 +1,14 @@
-import { Handle, Position } from "@xyflow/react";
+import { Handle, Position, useReactFlow } from "@xyflow/react";
 import { BaseNode } from "./BaseNode";
 
-export function HttpNode({ data }: any) {
+export function HttpNode({ id, data }: any) {
+  const { setNodes, setEdges } = useReactFlow();
+
+  const handleDelete = () => {
+    setNodes((nds) => nds.filter((n) => n.id !== id));
+    setEdges((eds) => eds.filter((e) => e.source !== id && e.target !== id));
+  };
+
   const color =
     data.executionStatus === "failed"
       ? "bg-red-200"
@@ -11,8 +18,14 @@ export function HttpNode({ data }: any) {
 
   return (
     <BaseNode className={`bg-yellow-100 border-yellow-300 ${color}`}>
-      <div className="text-yellow-800 font-semibold">
-        {data.label || "🔗 HTTP Request"}
+      <div className="flex justify-between items-center text-yellow-800 font-semibold">
+        <span>{data.label || "🔗 HTTP Request"}</span>
+        <button
+          onClick={handleDelete}
+          className="text-yellow-700 hover:text-red-500 text-xs"
+        >
+          ✕
+        </button>
       </div>
       <div className="text-xs text-yellow-700 truncate">
         {data.method || "GET"} {data.url || ""}

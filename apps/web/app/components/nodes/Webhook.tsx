@@ -1,7 +1,14 @@
-import { Handle, Position } from "@xyflow/react";
+import { Handle, Position, useReactFlow } from "@xyflow/react";
 import { BaseNode } from "./BaseNode";
 
-export function WebhookNode({ data }: any) {
+export function WebhookNode({ id, data }: any) {
+  const { setNodes, setEdges } = useReactFlow();
+
+  const handleDelete = () => {
+    setNodes((nds) => nds.filter((n) => n.id !== id));
+    setEdges((eds) => eds.filter((e) => e.source !== id && e.target !== id));
+  };
+
   const color =
     data.executionStatus === "failed"
       ? "bg-red-200"
@@ -11,8 +18,14 @@ export function WebhookNode({ data }: any) {
 
   return (
     <BaseNode className={`bg-blue-100 border-blue-300 ${color}`}>
-      <div className="text-blue-800 font-semibold">
-        {data.label || "🚪 Webhook Trigger"}
+      <div className="flex justify-between items-center text-blue-800 font-semibold">
+        <span>{data.label || "🚪 Webhook Trigger"}</span>
+        <button
+          onClick={handleDelete}
+          className="text-yellow-700 hover:text-red-500 text-xs"
+        >
+          ✕
+        </button>
       </div>
       <div className="text-xs text-blue-700 truncate">
         {data.webhookUrl || "No URL set"}
