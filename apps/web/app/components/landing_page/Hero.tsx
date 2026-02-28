@@ -9,6 +9,8 @@ import Link from "next/link";
 
 export default function HeroBackground() {
   const [showLogin, setShowLogin] = useState(false);
+  const [command, setCommand] = useState("");
+  const [isTerminalFocused, setIsTerminalFocused] = useState(false);
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
@@ -84,6 +86,70 @@ export default function HeroBackground() {
           Automate your backend logic visually. Triggers, actions, and branching
           — all in one powerful canvas.
         </p>
+
+        {/* Mac-style Terminal */}
+        <div className="mt-10 w-full max-w-2xl">
+          <div className="overflow-hidden rounded-2xl border border-zinc-700/50 bg-zinc-900/90 shadow-[0_20px_80px_rgba(0,0,0,0.6)]">
+            {/* Top Bar */}
+            <div className="flex items-center justify-between border-b border-zinc-700/50 bg-zinc-800/80 px-4 py-2">
+              <div className="flex items-center gap-3">
+                <div className="flex gap-2">
+                  <span className="h-3 w-3 rounded-full bg-zinc-500" />
+                  <span className="h-3 w-3 rounded-full bg-zinc-600" />
+                  <span className="h-3 w-3 rounded-full bg-zinc-700" />
+                </div>
+                <span className="font-mono text-sm text-zinc-300">
+                  &gt;_ aurel.dev
+                </span>
+              </div>
+              <span className="font-mono text-xs text-zinc-500">idle</span>
+            </div>
+
+            {/* Terminal Body */}
+            <div className="min-h-[100px] bg-zinc-900 px-6 py-5 font-mono text-lg text-zinc-500">
+              <div className="flex items-center gap-3">
+                <span className="text-zinc-500">&gt;</span>
+                <div className="relative flex-1">
+                  <input
+                    type="text"
+                    value={command}
+                    onChange={(e) => setCommand(e.target.value)}
+                    onFocus={() => setIsTerminalFocused(true)}
+                    onBlur={() => setIsTerminalFocused(false)}
+                    className={`w-full bg-transparent text-sm text-zinc-200 outline-none placeholder:text-zinc-700 ${
+                      isTerminalFocused ? "caret-zinc-200" : "caret-transparent"
+                    }`}
+                    placeholder="create  a  workflow..."
+                  />
+                  {!isTerminalFocused && (
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 text-zinc-200 animate-blink"
+                    >
+                      |
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Bar */}
+            <div className="flex items-center justify-between border-t border-zinc-700/50 bg-zinc-900 px-4 py-2">
+              <div className="flex items-center gap-4 font-mono text-sm text-zinc-500">
+                <span className="rounded-full bg-zinc-700/60 px-3 py-1 text-zinc-300">
+                  ∞
+                </span>
+                <span>templates</span>
+                <span className="text-zinc-600">|</span>
+                <span>0 / 200</span>
+              </div>
+
+              <button className="flex h-10 w-10 items-center justify-center rounded-lg border border-zinc-700/60 bg-zinc-800/80 transition hover:bg-zinc-700/80">
+                <span className="text-zinc-300">→</span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       {showLogin && (
