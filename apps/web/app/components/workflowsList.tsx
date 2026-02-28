@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import useSWR from "swr";
 
 type Workflow = {
@@ -25,8 +26,13 @@ export function WorkflowsList() {
   return (
     <ul className="space-y-2">
       {data.map((workflow) => (
-        <li key={workflow.id} className="rounded border p-3">
-          {workflow.name}
+        <li key={workflow.id}>
+          <Link
+            href={`/editor/${workflow.id}`}
+            className="block rounded border p-3 transition-colors hover:bg-zinc-50"
+          >
+            {workflow.name}
+          </Link>
         </li>
       ))}
     </ul>

@@ -23,7 +23,7 @@ export default async function EditorPage({ params }: EditorPageProps) {
   const { id } = await params;
 
   if (!userEmail) {
-    redirect("/login");
+    redirect("/");
   }
 
   const prisma = await getPrisma();
@@ -45,8 +45,8 @@ export default async function EditorPage({ params }: EditorPageProps) {
   return (
     <EditorClient
       workflowId={workflow.id}
-      initialNodes={((workflow.nodes as unknown) as Node[]) ?? []}
-      initialEdges={((workflow.edges as unknown) as Edge[]) ?? []}
+      initialNodes={(workflow.nodes as unknown as Node[]) ?? []}
+      initialEdges={(workflow.edges as unknown as Edge[]) ?? []}
     />
   );
 }
