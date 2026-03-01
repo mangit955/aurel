@@ -1,11 +1,11 @@
-import { Handle, Position, useReactFlow } from "@xyflow/react";
+import { Handle, Position } from "@xyflow/react";
+import { useWorkflowStore } from "@/store/workflowStore";
 
 export function IfNode({ id, data }: any) {
-  const { setNodes, setEdges } = useReactFlow();
+  const deleteNode = useWorkflowStore((state) => state.deleteNode);
 
   const handleDelete = () => {
-    setNodes((nds) => nds.filter((n) => n.id !== id));
-    setEdges((eds) => eds.filter((e) => e.source !== id && e.target !== id));
+    deleteNode(id);
   };
   const statusColor =
     data.executionStatus === "failed"

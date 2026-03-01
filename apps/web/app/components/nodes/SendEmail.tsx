@@ -1,12 +1,13 @@
-import { Handle, Position, useReactFlow } from "@xyflow/react";
+import { Handle, Position } from "@xyflow/react";
 import { BaseNode } from "./BaseNode";
+import Gmail from "@/public/gmail";
+import { useWorkflowStore } from "@/store/workflowStore";
 
 export function EmailNode({ id, data }: any) {
-  const { setNodes, setEdges } = useReactFlow();
+  const deleteNode = useWorkflowStore((state) => state.deleteNode);
 
   const handleDelete = () => {
-    setNodes((nds) => nds.filter((n) => n.id !== id));
-    setEdges((eds) => eds.filter((e) => e.source !== id && e.target !== id));
+    deleteNode(id);
   };
   const color =
     data.executionStatus === "failed"
@@ -16,18 +17,17 @@ export function EmailNode({ id, data }: any) {
         : "bg-gray-100";
 
   return (
-    <BaseNode className={`bg-red-100 border-red-300 ${color}`}>
-      <div className="flex justify-between items-center text-red-800 font-semibold">
-        <span>{data.label || "📧 Send Email"}</span>
-        <button
-          onClick={handleDelete}
-          className="text-red-700 hover:text-red-900 text-xs"
-        >
-          ✕
-        </button>
-      </div>
-      <div className="text-xs text-red-700 truncate">
-        {data.to || "No recipient"}
+    <BaseNode className={`relative bg-zinc-700 border-zinc-200 ${color}`}>
+      <button
+        onClick={handleDelete}
+        className="absolute right-1 top-1 text-zinc-400 hover:text-zinc-500 text-xs"
+      >
+        ✕
+      </button>
+      <div className="flex items-center text-zinc-200 font-semibold">
+        <span>
+          <Gmail size={24} />
+        </span>
       </div>
       <Handle
         type="target"
