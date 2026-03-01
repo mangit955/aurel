@@ -1,6 +1,7 @@
 import { Handle, Position } from "@xyflow/react";
 import { BaseNode } from "./BaseNode";
 import { useWorkflowStore } from "@/store/workflowStore";
+import CurlyBrackets from "@/public/curly";
 
 export function SetNode({ id, data }: any) {
   const deleteNode = useWorkflowStore((state) => state.deleteNode);
@@ -17,17 +18,19 @@ export function SetNode({ id, data }: any) {
         : "bg-gray-100";
 
   return (
-    <BaseNode className={`bg-purple-100 border-purple-300 ${color}`}>
+    <BaseNode className={`group relative bg-zinc-800 border-zinc-200 ${color}`}>
       <div className="flex justify-between items-center text-purple-800 font-semibold">
-        <span>{data.label || "📌 Set Variables"}</span>
+        <span>
+          <CurlyBrackets size={24} />
+        </span>
         <button
           onClick={handleDelete}
-          className="text-purple-700 hover:text-red-500 text-xs"
+          className="absolute cursor-pointer right-1 top-1 text-xs text-zinc-300 opacity-0 transition-opacity group-hover:opacity-100 hover:text-zinc-300"
         >
           ✕
         </button>
       </div>
-      <div className="text-xs text-purple-700">
+      <div className="text-xs pt-2 text-zinc-200">
         {data.variables?.length ?? 0} variables
       </div>
       <Handle

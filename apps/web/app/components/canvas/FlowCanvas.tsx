@@ -37,7 +37,7 @@ export const FlowCanvas = () => {
         }}
         fitView
       >
-        <Background />
+        <Background className="bg-zinc-900!" />
       </ReactFlow>
     </div>
   );

@@ -125,7 +125,7 @@ export default function HeroBackground() {
         {session?.user ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div className="h-[40px] cursor-pointer rounded-full  bg-white/10 hover:bg-white/20 transition-colors px-3 text-white backdrop-blur-xl flex items-center gap-2">
+              <div className="h-[40px] cursor-pointer rounded-md  bg-white/10 hover:bg-white/20 transition-colors px-3 text-white backdrop-blur-xl flex items-center gap-2">
                 {session.user.image ? (
                   <img
                     src={session.user.image}
@@ -173,11 +173,11 @@ export default function HeroBackground() {
         )}
       </div>
 
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-        <span className="text-5xl font-semibold font-mono text-zinc-200">
+      <div className="absolute  inset-0 flex flex-col items-center justify-center text-center px-6">
+        <span className="text-5xl  font-semibold font-mono text-zinc-200">
           Build workflows without code
         </span>
-        <p className="mt-4 max-w-xl font-sans font-semibold text-md leading-relaxed text-zinc-300">
+        <p className="mt-4 backdrop-blur-sm rounded-md max-w-xl font-sans font-semibold text-md leading-relaxed text-zinc-400">
           Automate your backend logic visually. Triggers, actions, and branching
           — all in one powerful canvas.
         </p>

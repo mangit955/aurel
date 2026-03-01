@@ -17,16 +17,16 @@ export function EmailNode({ id, data }: any) {
         : "bg-gray-100";
 
   return (
-    <BaseNode className={`relative bg-zinc-700 border-zinc-200 ${color}`}>
+    <BaseNode className={`group relative bg-zinc-800 border-zinc-200 ${color}`}>
       <button
         onClick={handleDelete}
-        className="absolute right-1 top-1 text-zinc-400 hover:text-zinc-500 text-xs"
+        className="absolute cursor-pointer right-1 top-1 text-xs text-zinc-300 opacity-0 transition-opacity group-hover:opacity-100 hover:text-zinc-300"
       >
         ✕
       </button>
       <div className="flex items-center text-zinc-200 font-semibold">
         <span>
-          <Gmail size={24} />
+          <Gmail size={24} className="" />
         </span>
       </div>
       <Handle

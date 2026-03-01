@@ -1,5 +1,7 @@
 import { Handle, Position } from "@xyflow/react";
 import { useWorkflowStore } from "@/store/workflowStore";
+import Signpost from "@/public/signpost";
+import { BaseNode } from "./BaseNode";
 
 export function IfNode({ id, data }: any) {
   const deleteNode = useWorkflowStore((state) => state.deleteNode);
@@ -7,7 +9,7 @@ export function IfNode({ id, data }: any) {
   const handleDelete = () => {
     deleteNode(id);
   };
-  const statusColor =
+  const color =
     data.executionStatus === "failed"
       ? "border-destructive/50 bg-destructive/10"
       : data.executionStatus === "success"
@@ -15,29 +17,24 @@ export function IfNode({ id, data }: any) {
         : "border-border bg-card";
 
   return (
-    <div className={`w-48 rounded-xl border shadow-sm ${statusColor} text-sm text-card-foreground`}>
-      {/* Header */}
-      <div className="px-3 py-2 border-b bg-muted rounded-t-xl font-semibold text-muted-foreground flex justify-between items-center">
-        <span>IF</span>
+    <BaseNode className={`group relative bg-zinc-800 border-zinc-200 ${color}`}>
+      <div className="flex flex-col items-center relative py-2">
+        <div className="text-yellow-800 font-semibold">
+          <Signpost size={24} />
+        </div>
+
         <button
           onClick={handleDelete}
-          className="text-gray-400 hover:text-red-500 text-xs"
+          className="absolute cursor-pointer right-1 top-1 text-xs text-zinc-300 opacity-0 transition-opacity group-hover:opacity-100 hover:text-zinc-300"
         >
           ✕
         </button>
-      </div>
 
-      {/* Condition */}
-      <div className="px-3 py-2 text-card-foreground">
-        <span className="font-medium">{data.field || "field"}</span>{" "}
-        <span className="text-muted-foreground">{data.operator || "="}</span>{" "}
-        <span className="font-medium">{data.value || "value"}</span>
-      </div>
-
-      {/* Branch Labels */}
-      <div className="flex justify-between px-4 pb-2 text-xs font-medium">
-        <span className="text-green-600">True</span>
-        <span className="text-red-600">False</span>
+        {/* Branch Labels */}
+        <div className="flex gap-4 justify-between w-full px-6 pt-2 text-xs font-medium">
+          <span className="text-zinc-200">True</span>
+          <span className="text-zinc-200">False</span>
+        </div>
       </div>
 
       {/* Input Handle */}
@@ -69,6 +66,6 @@ export function IfNode({ id, data }: any) {
           background: "#dc2626",
         }}
       />
-    </div>
+    </BaseNode>
   );
 }

@@ -2,7 +2,23 @@
 
 import { useEffect, useState } from "react";
 import { useWorkflowStore } from "@/store/workflowStore";
-import { Redo2, Undo2 } from "lucide-react";
+import {
+  ChevronDown,
+  Filter,
+  Globe,
+  Mail,
+  Redo2,
+  Undo2,
+  Variable,
+  Webhook,
+} from "lucide-react";
+import Flask from "@/public/flask";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const createNode = (type: string, x: number, y: number) => ({
   id: crypto.randomUUID(),
@@ -78,6 +94,51 @@ export function Toolbar({ workflowId }: { workflowId?: string }) {
 
   return (
     <div className="space-x-2 flex">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="bg-secondary text-secondary-foreground p-1 px-2 cursor-pointer rounded-md border flex items-center gap-1">
+            Add Node <ChevronDown size={14} />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={() => addNode("webhookTrigger")}
+          >
+            Webhook
+            <Webhook size={14} className="ml-auto text-zinc-500" />
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={() => addNode("httpRequest")}
+          >
+            HTTP
+            <Globe size={14} className="ml-auto text-zinc-500" />
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={() => addNode("setVariable")}
+          >
+            Set
+            <Variable size={14} className="ml-auto text-zinc-500" />
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={() => addNode("ifFilter")}
+          >
+            If / Filter
+            <Filter size={14} className="ml-auto text-zinc-500" />
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="cursor-pointer"
+            onClick={() => addNode("sendEmail")}
+          >
+            Email
+            <Mail size={14} className="ml-auto text-zinc-500" />
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
       <button
         onClick={undo}
         disabled={!canUndo}
@@ -85,7 +146,7 @@ export function Toolbar({ workflowId }: { workflowId?: string }) {
         title="Undo"
       >
         <span className="flex items-center gap-1">
-          <Undo2 size={14} /> Undo
+          <Undo2 size={14} />
         </span>
       </button>
       <button
@@ -95,47 +156,17 @@ export function Toolbar({ workflowId }: { workflowId?: string }) {
         title="Redo"
       >
         <span className="flex items-center gap-1">
-          <Redo2 size={14} /> Redo
+          <Redo2 size={14} />
         </span>
       </button>
 
-      {/* add more buttons for different node types later */}
-      <button
-        onClick={() => addNode("webhookTrigger")}
-        className="bg-secondary text-secondary-foreground p-1 px-2 cursor-pointer rounded-md border"
-      >
-        Webhook
-      </button>
-      <button
-        onClick={() => addNode("httpRequest")}
-        className="bg-secondary text-secondary-foreground p-1 px-2 cursor-pointer rounded-md border"
-      >
-        HTTP
-      </button>
-      <button
-        onClick={() => addNode("setVariable")}
-        className="bg-secondary text-secondary-foreground p-1 px-2 cursor-pointer rounded-md border"
-      >
-        Set
-      </button>
-      <button
-        onClick={() => addNode("ifFilter")}
-        className="bg-secondary text-secondary-foreground p-1 px-2 cursor-pointer rounded-md border"
-      >
-        If / Filter
-      </button>
-      <button
-        onClick={() => addNode("sendEmail")}
-        className="bg-secondary text-secondary-foreground p-1 px-2 cursor-pointer rounded-md border"
-      >
-        Email
-      </button>
       {workflowId && (
         <button
           onClick={handleRun}
           disabled={isRunning}
-          className="bg-primary text-primary-foreground p-1 px-2 cursor-pointer rounded-md disabled:opacity-50"
+          className="bg-orange-400 gap-2 flex items-center font-semibold text-white p-1 px-2 cursor-pointer rounded-md disabled:opacity-50"
         >
+          <Flask size={20} />
           {isRunning ? "Running..." : "Run Workflow"}
         </button>
       )}
