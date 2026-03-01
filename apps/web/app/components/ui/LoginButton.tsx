@@ -24,7 +24,7 @@ export function AuthButton() {
   return (
     <div>
       <button
-        onClick={() => signIn("github", { callbackUrl: "/dashboard" })}
+        onClick={() => signIn("github", { callbackUrl: "/" })}
         className="cursor-pointer rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-black"
       >
         Sign in with GitHub

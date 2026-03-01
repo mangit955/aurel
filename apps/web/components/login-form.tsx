@@ -40,7 +40,7 @@ export function LoginForm({
                   className="cursor-pointer"
                   onClick={async () => {
                     setLoadingProvider("github");
-                    await signIn("github");
+                    await signIn("github", { callbackUrl: "/" });
                   }}
                 >
                   {" "}
@@ -64,7 +64,7 @@ export function LoginForm({
                   className="cursor-pointer"
                   onClick={async () => {
                     setLoadingProvider("google");
-                    await signIn("google");
+                    await signIn("google", { callbackUrl: "/" });
                   }}
                 >
                   {" "}

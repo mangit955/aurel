@@ -1,16 +1,73 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Dither from "@/components/Dither";
 import GradientText from "@/components/GradientText";
 import { LoginForm } from "@/components/login-form";
 import ScrambledText from "@/components/ScrambledText";
+import Terminal from "@/app/components/Terminal";
 import Link from "next/link";
+import { signOut, useSession } from "next-auth/react";
+import { CreditCardIcon, Home, LogOutIcon, SettingsIcon } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import Icon from "@/public/icon";
 
 export default function HeroBackground() {
+  const router = useRouter();
+  const { data: session } = useSession();
   const [showLogin, setShowLogin] = useState(false);
-  const [command, setCommand] = useState("");
-  const [isTerminalFocused, setIsTerminalFocused] = useState(false);
+  const [isCreatingWorkflow, setIsCreatingWorkflow] = useState(false);
+
+  useEffect(() => {
+    if (session?.user) {
+      setShowLogin(false);
+    }
+  }, [session]);
+
+  const handleCreateWorkflow = async (name: string) => {
+    if (!name) {
+      throw new Error("Enter a workflow name first.");
+    }
+    setIsCreatingWorkflow(true);
+
+    try {
+      const response = await fetch("/api/workflows", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+
+        if (response.status === 401) {
+          setShowLogin(true);
+        }
+
+        throw new Error(payload?.error ?? "Failed to create workflow.");
+      }
+
+      const workflow = (await response.json()) as { id: string };
+      router.push(`/editor/${workflow.id}`);
+      router.refresh();
+    } finally {
+      setIsCreatingWorkflow(false);
+    }
+  };
+
+  const displayName =
+    session?.user?.name?.trim() ||
+    session?.user?.email?.split("@")[0] ||
+    "User";
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
@@ -33,21 +90,22 @@ export default function HeroBackground() {
       </div>
 
       {/* Logo aligned left */}
-      <div className="absolute top-6 left-8 z-10 h-[48px] flex items-center">
+      <div className="absolute top-6 left-8 z-10 h-[48px] flex items-center gap-2">
+        <Icon size={36} />
         <ScrambledText
-          className="scrambled-text-demo text-white font-semibold text-lg"
+          className="scrambled-text-demo font-semibold font-mono! text-white !text-2xl leading-none"
           radius={30}
           duration={1.2}
           speed={0.5}
           scrambleChars=":."
         >
-          Aurel.
+          aurel.
         </ScrambledText>
       </div>
 
       {/* Glassmorphism Navbar */}
       <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
-        <div className="h-[48px] min-w-[320px] px-6 rounded-full bg-white/10 backdrop-blur-2xl border border-white/20 shadow-lg flex items-center justify-center gap-8 pointer-events-auto">
+        <div className="h-[36px] min-w-[320px] px-6 rounded-md bg-white/10 backdrop-blur-2xl border border-white/20 shadow-lg flex items-center justify-center gap-8 pointer-events-auto">
           <div className="flex font-semibold items-center gap-8 text-sm text-white">
             <span>Features</span>
             <span>Pricing</span>
@@ -60,96 +118,73 @@ export default function HeroBackground() {
       <div className="absolute top-6 right-8 z-10 flex items-center gap-3">
         <Link
           href="/"
-          className="h-[40px] px-5 rounded-full border border-white/25 bg-white/10 text-white text-sm font-medium backdrop-blur-xl flex items-center justify-center hover:bg-white/20 transition-colors"
+          className="h-[30px] px-1 rounded-md border border-white/25 bg-white/10 text-white text-sm font-medium backdrop-blur-xl flex items-center justify-center hover:bg-white/20 transition-colors"
         >
-          Home
+          <Home height={20} width={20} />
         </Link>
-        <button
-          type="button"
-          onClick={() => setShowLogin(true)}
-          className="h-[40px] px-5 rounded-full border border-white/30 bg-white text-black text-sm font-semibold flex items-center justify-center hover:bg-zinc-200 transition-colors"
-        >
-          Sign in
-        </button>
+        {session?.user ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="h-[40px] cursor-pointer rounded-full  bg-white/10 hover:bg-white/20 transition-colors px-3 text-white backdrop-blur-xl flex items-center gap-2">
+                {session.user.image ? (
+                  <img
+                    src={session.user.image}
+                    alt={displayName}
+                    className="h-7 w-7 rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="h-7 w-7 rounded-full bg-zinc-700 text-zinc-100 text-xs font-semibold flex items-center justify-center">
+                    {displayName.slice(0, 1).toUpperCase()}
+                  </span>
+                )}
+                <span className="max-w-[140px] truncate text-sm font-medium">
+                  {displayName}
+                </span>
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem className="cursor-pointer">
+                <CreditCardIcon />
+                Billing
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
+                <SettingsIcon />
+                Settings
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="cursor-pointer"
+                variant="destructive"
+                onClick={() => signOut({ callbackUrl: "/" })}
+              >
+                <LogOutIcon />
+                Log out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setShowLogin(true)}
+            className="h-[30px] px-5 cursor-pointer rounded-md border border-white/30 bg-white text-black text-sm font-semibold flex items-center justify-center hover:bg-zinc-200 transition-colors"
+          >
+            Sign in
+          </button>
+        )}
       </div>
 
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-        <GradientText
-          colors={["#F3F4F6", "#9CA3AF", "#4B5563"]}
-          animationSpeed={8}
-          showBorder={false}
-          className=" text-6xl "
-        >
+        <span className="text-5xl font-semibold font-mono text-zinc-200">
           Build workflows without code
-        </GradientText>
-        <p className="text-lg mt-4 text-gray-300 max-w-xl">
+        </span>
+        <p className="mt-4 max-w-xl font-sans font-semibold text-md leading-relaxed text-zinc-300">
           Automate your backend logic visually. Triggers, actions, and branching
           — all in one powerful canvas.
         </p>
-
-        {/* Mac-style Terminal */}
-        <div className="mt-10 w-full max-w-2xl">
-          <div className="overflow-hidden rounded-2xl border border-zinc-700/50 bg-zinc-900/90 shadow-[0_20px_80px_rgba(0,0,0,0.6)]">
-            {/* Top Bar */}
-            <div className="flex items-center justify-between border-b border-zinc-700/50 bg-zinc-800/80 px-4 py-2">
-              <div className="flex items-center gap-3">
-                <div className="flex gap-2">
-                  <span className="h-3 w-3 rounded-full bg-zinc-500" />
-                  <span className="h-3 w-3 rounded-full bg-zinc-600" />
-                  <span className="h-3 w-3 rounded-full bg-zinc-700" />
-                </div>
-                <span className="font-mono text-sm text-zinc-300">
-                  &gt;_ aurel.dev
-                </span>
-              </div>
-              <span className="font-mono text-xs text-zinc-500">idle</span>
-            </div>
-
-            {/* Terminal Body */}
-            <div className="min-h-[100px] bg-zinc-900 px-6 py-5 font-mono text-lg text-zinc-500">
-              <div className="flex items-center gap-3">
-                <span className="text-zinc-500">&gt;</span>
-                <div className="relative flex-1">
-                  <input
-                    type="text"
-                    value={command}
-                    onChange={(e) => setCommand(e.target.value)}
-                    onFocus={() => setIsTerminalFocused(true)}
-                    onBlur={() => setIsTerminalFocused(false)}
-                    className={`w-full bg-transparent text-sm text-zinc-200 outline-none placeholder:text-zinc-700 ${
-                      isTerminalFocused ? "caret-zinc-200" : "caret-transparent"
-                    }`}
-                    placeholder="create  a  workflow..."
-                  />
-                  {!isTerminalFocused && (
-                    <span
-                      aria-hidden
-                      className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 text-zinc-200 animate-blink"
-                    >
-                      |
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom Bar */}
-            <div className="flex items-center justify-between border-t border-zinc-700/50 bg-zinc-900 px-4 py-2">
-              <div className="flex items-center gap-4 font-mono text-sm text-zinc-500">
-                <span className="rounded-full bg-zinc-700/60 px-3 py-1 text-zinc-300">
-                  ∞
-                </span>
-                <span>templates</span>
-                <span className="text-zinc-600">|</span>
-                <span>0 / 200</span>
-              </div>
-
-              <button className="flex h-10 w-10 items-center justify-center rounded-lg border border-zinc-700/60 bg-zinc-800/80 transition hover:bg-zinc-700/80">
-                <span className="text-zinc-300">→</span>
-              </button>
-            </div>
-          </div>
-        </div>
+        <Terminal
+          onCreateWorkflow={handleCreateWorkflow}
+          isCreating={isCreatingWorkflow}
+        />
       </div>
 
       {showLogin && (

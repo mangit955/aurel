@@ -1,9 +1,14 @@
 .text-block {
-  margin: 7vw;
-  max-width: 800px;
-  font-family: monospace;
-  font-size: clamp(14px, 4vw, 32px);
+  margin: 0;
+  max-width: none;
+  font-family: inherit;
+  font-size: inherit;
   color: #fff;
+  display: inline-block;
+}
+
+.text-block p {
+  margin: 0;
 }
 
 .char {
