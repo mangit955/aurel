@@ -7,6 +7,10 @@
   "scripts": {
     "dev:web": "pnpm --filter web dev",
     "dev:worker": "pnpm --filter worker start",
+    "db:generate": "pnpm --filter @aurel/db run generate",
+    "db:migrate:deploy": "pnpm --filter @aurel/db run migrate:deploy",
+    "build:web:prod": "pnpm install --frozen-lockfile && pnpm run db:generate && pnpm --filter web build",
+    "build:worker:prod": "pnpm install --frozen-lockfile && pnpm run db:generate",
     "test": "echo \"No tests configured yet\""
   },
   "keywords": [],
