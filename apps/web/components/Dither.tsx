@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useEffect, forwardRef } from "react";
+import { useRef, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { EffectComposer, wrapEffect } from "@react-three/postprocessing";
 import { Effect } from "postprocessing";
@@ -136,9 +136,9 @@ void mainImage(in vec4 inputColor, in vec2 uv, out vec4 outputColor) {
 `;
 
 class RetroEffectImpl extends Effect {
-  public uniforms: Map<string, THREE.Uniform<any>>;
+  public uniforms: Map<string, { value: number }>;
   constructor() {
-    const uniforms = new Map<string, THREE.Uniform<any>>([
+    const uniforms = new Map<string, { value: number }>([
       ["colorNum", new THREE.Uniform(4.0)],
       ["pixelSize", new THREE.Uniform(2.0)],
     ]);
@@ -159,30 +159,44 @@ class RetroEffectImpl extends Effect {
   }
 }
 
-const RetroEffect = forwardRef<
-  RetroEffectImpl,
-  { colorNum: number; pixelSize: number }
->((props, ref) => {
-  const { colorNum, pixelSize } = props;
+function RetroEffect({
+  colorNum,
+  pixelSize,
+}: {
+  colorNum: number;
+  pixelSize: number;
+}) {
   const WrappedRetroEffect = wrapEffect(RetroEffectImpl);
-  return (
-    <WrappedRetroEffect ref={ref} colorNum={colorNum} pixelSize={pixelSize} />
-  );
-});
-
-RetroEffect.displayName = "RetroEffect";
+  return <WrappedRetroEffect colorNum={colorNum} pixelSize={pixelSize} />;
+}
 
 interface WaveUniforms {
-  [key: string]: THREE.Uniform<any>;
-  time: THREE.Uniform<number>;
-  resolution: THREE.Uniform<THREE.Vector2>;
-  waveSpeed: THREE.Uniform<number>;
-  waveFrequency: THREE.Uniform<number>;
-  waveAmplitude: THREE.Uniform<number>;
-  waveColor: THREE.Uniform<THREE.Color>;
-  mousePos: THREE.Uniform<THREE.Vector2>;
-  enableMouseInteraction: THREE.Uniform<number>;
-  mouseRadius: THREE.Uniform<number>;
+  time: { value: number };
+  resolution: {
+    value: {
+      x: number;
+      y: number;
+      set: (x: number, y: number) => void;
+    };
+  };
+  waveSpeed: { value: number };
+  waveFrequency: { value: number };
+  waveAmplitude: { value: number };
+  waveColor: {
+    value: {
+      set: (r: number, g: number, b: number) => void;
+    };
+  };
+  mousePos: {
+    value: {
+      x: number;
+      y: number;
+      set: (x: number, y: number) => void;
+      copy: (v: { x: number; y: number }) => void;
+    };
+  };
+  enableMouseInteraction: { value: number };
+  mouseRadius: { value: number };
 }
 
 interface DitheredWavesProps {
