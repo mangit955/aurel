@@ -4,7 +4,6 @@ import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { CreditCardIcon, Home, LogOutIcon, SettingsIcon } from "lucide-react";
 import Icon from "@/public/icon";
-import ScrambledText from "@/components/ScrambledText";
 import {
   DropdownMenu,
   DropdownMenuContent,
