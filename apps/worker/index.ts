@@ -6,11 +6,17 @@ import { executeWorkflow } from "./engine/executor";
 
 console.log("DATABASE_URL:", process.env.DATABASE_URL);
 
-const connection = new IORedis({
-  host: process.env.REDIS_HOST || "localhost",
-  port: parseInt(process.env.REDIS_PORT || "6379"),
-  maxRetriesPerRequest: null,
-});
+const redisUrl = process.env.REDIS_URL;
+const connection = redisUrl
+  ? new IORedis(redisUrl, {
+      maxRetriesPerRequest: null,
+    })
+  : new IORedis({
+      host: process.env.REDIS_HOST || "localhost",
+      port: parseInt(process.env.REDIS_PORT || "6379"),
+      password: process.env.REDIS_PASSWORD || undefined,
+      maxRetriesPerRequest: null,
+    });
 
 const worker = new Worker(
   "workflow-execution",

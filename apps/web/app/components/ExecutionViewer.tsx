@@ -4,12 +4,7 @@ import { useState } from "react";
 import useSWR from "swr";
 import { ReactFlow, Background, Controls } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-
-import { WebhookNode } from "./nodes/Webhook";
-import { HttpNode } from "./nodes/HttpRequest";
-import { EmailNode } from "./nodes/SendEmail";
-import { IfNode } from "./nodes/Filter";
-import { SetNode } from "./nodes/SetNode";
+import { X } from "lucide-react";
 import ExecutionNode from "./execution/ExecutionNode";
 
 const nodeTypes = {
@@ -37,9 +32,22 @@ export default function ExecutionViewer({
   );
   const [selectedNode, setSelectedNode] = useState<any>(null);
 
-  if (error) return <p>Error loading execution</p>;
-  if (!execution) return <p>Loading…</p>;
-  if (execution.error) return <p>Error: {execution.error}</p>;
+  if (error)
+    return (
+      <div className="rounded-xl border border-red-900/50 bg-red-950/40 p-4 text-sm text-red-200">
+        Failed to load execution. Please refresh and try again.
+      </div>
+    );
+  if (!execution)
+    return (
+      <div className="h-[70vh] w-full animate-pulse rounded-xl border border-zinc-800 bg-zinc-900/50" />
+    );
+  if (execution.error)
+    return (
+      <div className="rounded-xl border border-red-900/50 bg-red-950/40 p-4 text-sm text-red-200">
+        Error: {execution.error}
+      </div>
+    );
 
   // decorate nodes with status and attach log info
   const decoratedNodes = execution.workflow.nodes.map((node: any) => {
@@ -58,8 +66,16 @@ export default function ExecutionViewer({
     };
   });
 
+  const status = String(selectedNode?.data?.executionStatus ?? "").toLowerCase();
+  const statusClass =
+    status === "success"
+      ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
+      : status === "failed"
+        ? "bg-red-500/15 text-red-300 border border-red-500/30"
+        : "bg-amber-500/15 text-amber-200 border border-amber-500/30";
+
   return (
-    <div className="h-[80vh] w-full">
+    <div className="relative h-[70vh] w-full overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950/70">
       <ReactFlow
         nodes={decoratedNodes.map((n: any) => ({
           ...n,
@@ -73,36 +89,46 @@ export default function ExecutionViewer({
         <Background />
         <Controls />
       </ReactFlow>
-
       {selectedNode && (
-        <div className="absolute right-4 top-4 p-4 bg-card text-card-foreground shadow-lg border w-80">
-          <h2 className="font-bold text-lg">{selectedNode.data.label}</h2>
-
-          <p className="mt-2 text-sm">
-            <b>Status:</b> {selectedNode.data.executionStatus}
-          </p>
-          <hr className="my-2" />
-
-          <div className="text-xs">
-            <b>Input:</b>{" "}
-            <pre className="whitespace-pre-wrap text-xs">
-              {JSON.stringify(selectedNode.data.executionInput, null, 2)}
-            </pre>
+        <div className="absolute right-4 top-4 z-20 w-[22rem] rounded-xl border border-zinc-700 bg-zinc-900/95 p-4 text-zinc-100 shadow-xl backdrop-blur">
+          <div className="mb-3 flex items-start justify-between gap-3">
+            <div>
+              <h2 className="text-base font-semibold">{selectedNode.data.label}</h2>
+              <span
+                className={`mt-2 inline-flex rounded-full px-2.5 py-1 text-xs font-medium capitalize ${statusClass}`}
+              >
+                {status || "unknown"}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSelectedNode(null)}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-zinc-700 text-zinc-400 transition hover:bg-zinc-800 hover:text-zinc-200"
+            >
+              <X size={14} />
+            </button>
           </div>
 
-          <div className="text-xs mt-2">
-            <b>Output:</b>{" "}
-            <pre className="whitespace-pre-wrap text-xs">
-              {JSON.stringify(selectedNode.data.executionOutput, null, 2)}
-            </pre>
+          <div className="space-y-3 text-xs">
+            <div>
+              <p className="mb-1 font-medium text-zinc-400">Input</p>
+              <pre className="max-h-28 overflow-auto rounded-md border border-zinc-800 bg-zinc-950 p-2 whitespace-pre-wrap text-[11px] text-zinc-300">
+                {JSON.stringify(selectedNode.data.executionInput, null, 2)}
+              </pre>
+            </div>
+
+            <div>
+              <p className="mb-1 font-medium text-zinc-400">Output</p>
+              <pre className="max-h-28 overflow-auto rounded-md border border-zinc-800 bg-zinc-950 p-2 whitespace-pre-wrap text-[11px] text-zinc-300">
+                {JSON.stringify(selectedNode.data.executionOutput, null, 2)}
+              </pre>
+            </div>
           </div>
 
           {selectedNode.data.executionError && (
-            <>
-              <div className="text-red-600 mt-2">
-                <b>Error:</b> {selectedNode.data.executionError}
-              </div>
-            </>
+            <div className="mt-3 rounded-md border border-red-900/50 bg-red-950/40 p-2 text-xs text-red-200">
+              <b>Error:</b> {selectedNode.data.executionError}
+            </div>
           )}
         </div>
       )}

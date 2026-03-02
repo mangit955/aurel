@@ -29,8 +29,8 @@ export default function Navbar({ onSignIn }: NavbarProps) {
     <div className="pointer-events-none fixed inset-x-0 top-6 z-40 px-6 md:px-10 backdrop-blur-xl">
       <div className="mx-auto flex h-12 w-full max-w-6xl items-center justify-between">
         <div className="pointer-events-auto flex h-[48px] items-center gap-2">
-          <Icon size={36} />
-          <Link href="/">
+          <Link href="/" className="flex items-center gap-2">
+            <Icon size={36} />
             <span className="scrambled-text-demo font-m1 font-semibold !text-transparent !text-2xl leading-none bg-gradient-to-r from-zinc-100 via-zinc-300 to-zinc-500 bg-clip-text">
               aurel.
             </span>
@@ -46,11 +46,11 @@ export default function Navbar({ onSignIn }: NavbarProps) {
           </Link>
 
           {session?.user ? (
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
-                  className="flex h-[40px] items-center gap-2 rounded-md border border-transparent px-3 text-white backdrop-blur-xl transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-0"
+                  className="flex h-[40px] cursor-pointer items-center gap-2 rounded-md border border-transparent px-3 text-white backdrop-blur-xl transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-0"
                 >
                   {session.user.image ? (
                     <img
