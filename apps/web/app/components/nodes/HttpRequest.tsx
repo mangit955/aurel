@@ -18,7 +18,7 @@ export function HttpNode({ id, data }: any) {
         : "bg-gray-100";
 
   return (
-    <BaseNode className={`group relative bg-zinc-800 border-zinc-200 ${color}`}>
+    <BaseNode className={`group relative bg-zinc-900 border-zinc-400 ${color}`}>
       <div className="flex justify-between items-center text-yellow-800 font-semibold">
         <span>
           <Globe size={24} className="text-blue-400" />

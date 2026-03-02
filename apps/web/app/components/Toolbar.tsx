@@ -164,7 +164,7 @@ export function Toolbar({ workflowId }: { workflowId?: string }) {
         <button
           onClick={handleRun}
           disabled={isRunning}
-          className="bg-orange-400 gap-2 flex items-center font-semibold text-white p-1 px-2 cursor-pointer rounded-md disabled:opacity-50"
+          className="bg-orange-500 hover:bg-orange-600 gap-2 flex items-center font-semibold text-white p-1 px-2 cursor-pointer rounded-md disabled:opacity-50"
         >
           <Flask size={20} />
           {isRunning ? "Running..." : "Run Workflow"}

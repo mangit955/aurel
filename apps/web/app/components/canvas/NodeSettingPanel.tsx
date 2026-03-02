@@ -13,7 +13,6 @@ import { Input } from "@/app/components/ui/input";
 import { Label } from "@/app/components/ui/label";
 import { Button } from "@/app/components/ui/button";
 import { useState, useEffect } from "react";
-import { TestEmailButton } from "../TestEmailButton";
 
 export function NodeSettingsPanel() {
   const activeSettingsNodeId = useWorkflowStore((s) => s.activeSettingsNodeId);
@@ -64,9 +63,11 @@ export function NodeSettingsPanel() {
 
         {node && (
           <>
-            <div className="mt-4 space-y-4">
+            <div className="mt-4 space-y-4 px-8">
               <div>
-                <Label htmlFor="label">Label</Label>
+                <Label className="mb-3 text-zinc-500" htmlFor="label">
+                  Label
+                </Label>
                 <Input
                   id="label"
                   value={label}
@@ -77,7 +78,9 @@ export function NodeSettingsPanel() {
                 <div className="space-y-4">
                   {/* Field */}
                   <div>
-                    <Label htmlFor="field">Field</Label>
+                    <Label className="mb-3 text-zinc-500" htmlFor="field">
+                      Field
+                    </Label>
                     <Input
                       id="field"
                       value={
@@ -94,7 +97,9 @@ export function NodeSettingsPanel() {
 
                   {/* Operator */}
                   <div>
-                    <Label htmlFor="operator">Operator</Label>
+                    <Label className="mb-3 text-zinc-500" htmlFor="operator">
+                      Operator
+                    </Label>
                     <select
                       id="operator"
                       className="w-full border rounded-md px-3 py-2 text-sm"
@@ -120,7 +125,9 @@ export function NodeSettingsPanel() {
                   {/* Value (only when operator is not 'exists') */}
                   {node.data?.operator !== "exists" && (
                     <div>
-                      <Label htmlFor="value">Value</Label>
+                      <Label className="mb-3 text-zinc-500" htmlFor="value">
+                        Value
+                      </Label>
                       <Input
                         id="value"
                         value={
@@ -140,7 +147,9 @@ export function NodeSettingsPanel() {
               {node.type === "webhookTrigger" && (
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="webhookPath">Webhook Path</Label>
+                    <Label className="mb-3 text-zinc-500" htmlFor="webhookPath">
+                      Webhook Path
+                    </Label>
                     <Input
                       id="webhookPath"
                       value={
@@ -156,7 +165,12 @@ export function NodeSettingsPanel() {
                   </div>
 
                   <div>
-                    <Label htmlFor="webhookMethod">Method</Label>
+                    <Label
+                      className="mb-3 text-zinc-500"
+                      htmlFor="webhookMethod"
+                    >
+                      Method
+                    </Label>
                     <select
                       id="webhookMethod"
                       className="w-full border rounded-md px-3 py-2 text-sm"
@@ -184,6 +198,7 @@ export function NodeSettingsPanel() {
                     <Button
                       type="button"
                       variant="outline"
+                      className="cursor-pointer hover:bg-zinc-300  hover:border-zinc-500!"
                       size="sm"
                       onClick={() => {
                         const fullUrl = `${window.location.origin}/api/webhook/${node.data?.path || "your-path"}`;
@@ -199,7 +214,9 @@ export function NodeSettingsPanel() {
               {node.type === "setVariable" && (
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="variableKey">Variable Name</Label>
+                    <Label className="mb-3 text-zinc-500" htmlFor="variableKey">
+                      Variable Name
+                    </Label>
                     <Input
                       id="variableKey"
                       value={
@@ -216,7 +233,10 @@ export function NodeSettingsPanel() {
                   </div>
 
                   <div>
-                    <Label htmlFor="variableValue">
+                    <Label
+                      className="mb-3 text-zinc-500"
+                      htmlFor="variableValue"
+                    >
                       Value (supports {"{{field}}"})
                     </Label>
                     <Input
@@ -244,7 +264,9 @@ export function NodeSettingsPanel() {
               {node.type === "httpRequest" && (
                 <div className="space-y-3">
                   <div>
-                    <Label htmlFor="url">URL</Label>
+                    <Label className="mb-3 text-zinc-500" htmlFor="url">
+                      URL
+                    </Label>
                     <Input
                       id="url"
                       value={
@@ -257,7 +279,9 @@ export function NodeSettingsPanel() {
                   </div>
 
                   <div>
-                    <Label htmlFor="method">Method</Label>
+                    <Label className="mb-3 text-zinc-500" htmlFor="method">
+                      Method
+                    </Label>
                     <select
                       id="method"
                       className="w-full border rounded-md px-3 py-2 text-sm"
@@ -281,7 +305,9 @@ export function NodeSettingsPanel() {
               {node.type === "sendEmail" && (
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="to">To</Label>
+                    <Label className="mb-3 text-zinc-500" htmlFor="to">
+                      To
+                    </Label>
                     <Input
                       id="to"
                       value={
@@ -294,7 +320,9 @@ export function NodeSettingsPanel() {
                   </div>
 
                   <div>
-                    <Label htmlFor="subject">Subject</Label>
+                    <Label className="mb-3 text-zinc-500" htmlFor="subject">
+                      Subject
+                    </Label>
                     <Input
                       id="subject"
                       value={
@@ -309,7 +337,9 @@ export function NodeSettingsPanel() {
                   </div>
 
                   <div>
-                    <Label htmlFor="body">Body</Label>
+                    <Label className="mb-3 text-zinc-500" htmlFor="body">
+                      Body
+                    </Label>
                     <textarea
                       id="body"
                       className="w-full border rounded-md px-3 py-2 text-sm min-h-[100px]"
@@ -323,18 +353,20 @@ export function NodeSettingsPanel() {
                       }
                     />
                   </div>
-
-                  <TestEmailButton nodeId={node.id} />
                 </div>
               )}
             </div>
 
             <SheetFooter className="mt-6 flex justify-between">
               <SheetClose asChild>
-                <Button variant="outline">Cancel</Button>
+                <Button variant="outline" className="cursor-pointer">
+                  Cancel
+                </Button>
               </SheetClose>
 
-              <Button onClick={handleSave}>Save</Button>
+              <Button onClick={handleSave} className="cursor-pointer">
+                Save
+              </Button>
             </SheetFooter>
           </>
         )}

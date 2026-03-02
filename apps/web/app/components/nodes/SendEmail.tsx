@@ -17,7 +17,7 @@ export function EmailNode({ id, data }: any) {
         : "bg-gray-100";
 
   return (
-    <BaseNode className={`group relative bg-zinc-800 border-zinc-200 ${color}`}>
+    <BaseNode className={`group relative bg-zinc-900 border-zinc-400 ${color}`}>
       <button
         onClick={handleDelete}
         className="absolute cursor-pointer right-1 top-1 text-xs text-zinc-300 opacity-0 transition-opacity group-hover:opacity-100 hover:text-zinc-300"

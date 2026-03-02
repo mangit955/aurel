@@ -17,7 +17,7 @@ export function IfNode({ id, data }: any) {
         : "border-border bg-card";
 
   return (
-    <BaseNode className={`group relative bg-zinc-800 border-zinc-200 ${color}`}>
+    <BaseNode className={`group relative bg-zinc-900 border-zinc-400 ${color}`}>
       <div className="flex flex-col items-center relative py-2">
         <div className="text-yellow-800 font-semibold">
           <Signpost size={24} />
