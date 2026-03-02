@@ -26,12 +26,12 @@ export default function Navbar({ onSignIn }: NavbarProps) {
     "User";
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 top-6 z-40 px-6 md:px-10">
+    <div className="pointer-events-none fixed inset-x-0 top-6 z-40 px-6 md:px-10 backdrop-blur-xl">
       <div className="mx-auto flex h-12 w-full max-w-6xl items-center justify-between">
         <div className="pointer-events-auto flex h-[48px] items-center gap-2">
           <Icon size={36} />
           <Link href="/">
-            <span className="scrambled-text-demo font-semibold !font-mono !text-white !text-2xl leading-none">
+            <span className="scrambled-text-demo font-m1 font-semibold !text-transparent !text-2xl leading-none bg-gradient-to-r from-zinc-100 via-zinc-300 to-zinc-500 bg-clip-text">
               aurel.
             </span>
           </Link>

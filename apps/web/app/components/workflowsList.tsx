@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import useSWR from "swr";
 import { ArrowUpRight, Search, Workflow } from "lucide-react";
+import AnimatedList from "@/components/AnimatedList";
 
 type Workflow = {
   id: string;
@@ -118,31 +119,36 @@ export function WorkflowsList() {
           </p>
         </div>
       ) : (
-        <div className="max-h-[22.25rem] overflow-y-auto pr-1">
-          <ul className="space-y-3">
-            {filteredWorkflows.map((workflow) => (
-              <li key={workflow.id}>
-                <Link
-                  href={`/editor/${workflow.id}`}
-                  className="group flex h-20 items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 py-4 transition hover:border-zinc-600 hover:bg-zinc-800/80"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-zinc-100">
-                      {workflow.name}
-                    </p>
-                    <p className="mt-1 font-mono text-[11px] text-zinc-500">
-                      ID: {workflow.id.slice(0, 12)}...
-                    </p>
-                  </div>
-                  <ArrowUpRight
-                    size={16}
-                    className="text-zinc-500 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-zinc-200"
-                  />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <AnimatedList
+          items={filteredWorkflows}
+          className="w-full"
+          itemClassName="!p-0 !bg-transparent !m-0"
+          showGradients={false}
+          enableArrowNavigation={false}
+          displayScrollbar
+          renderItem={(item) => {
+            const workflow = item as Workflow;
+            return (
+              <Link
+                href={`/editor/${workflow.id}`}
+                className="group flex h-20 items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 py-4 transition hover:border-zinc-600 hover:bg-zinc-800/80"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-zinc-100">
+                    {workflow.name}
+                  </p>
+                  <p className="mt-1 font-mono text-[11px] text-zinc-500">
+                    ID: {workflow.id.slice(0, 12)}...
+                  </p>
+                </div>
+                <ArrowUpRight
+                  size={16}
+                  className="text-zinc-500 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-zinc-200"
+                />
+              </Link>
+            );
+          }}
+        />
       )}
     </div>
   );

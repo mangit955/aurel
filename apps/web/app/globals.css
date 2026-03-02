@@ -5,6 +5,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: "M1";
+  src: url("/m1/MatrixtypeDisplay-9MyE5.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -48,16 +56,20 @@
   --radius-4xl: calc(var(--radius) + 16px);
   --animate-shine: shine var(--duration) infinite linear;
   @keyframes shine {
-  0% {
-    background-position: 0% 0%;
+    0% {
+      background-position: 0% 0%;
     }
-  50% {
-    background-position: 100% 100%;
+    50% {
+      background-position: 100% 100%;
     }
-  to {
-    background-position: 0% 0%;
+    to {
+      background-position: 0% 0%;
     }
   }
+}
+
+.font-m1 {
+  font-family: "M1", monospace;
 }
 
 :root {
@@ -180,9 +192,60 @@
   animation: shine-border var(--duration, 14s) linear infinite;
 }
 
+@keyframes ecg-trace {
+  0% {
+    stroke-dashoffset: 96;
+    opacity: 0.2;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.45;
+  }
+}
+
+.ecg-line-base {
+  stroke: rgba(242, 242, 252, 0.4);
+}
+
+.ecg-line-animate {
+  stroke: rgb(134 239 172 / 1);
+  filter: drop-shadow(0 0 6px rgb(34 197 94 / 0.45));
+  stroke-dasharray: 96;
+  stroke-dashoffset: 96;
+  animation: ecg-trace 1.5s linear infinite;
+}
+
 /* Make text wrap like terminal output */
 .terminal-output {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas;
   color: #33ff99;
   padding-bottom: 4px;
+}
+
+/* Dark themed scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(113, 113, 122, 0.9) rgba(24, 24, 27, 0.95);
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: rgba(24, 24, 27, 0.95);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(113, 113, 122, 0.9);
+  border-radius: 9999px;
+  border: 2px solid rgba(24, 24, 27, 0.95);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(161, 161, 170, 0.95);
 }

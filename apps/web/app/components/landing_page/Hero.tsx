@@ -92,15 +92,9 @@ export default function HeroBackground() {
       {/* Logo aligned left */}
       <div className="absolute top-6 left-8 z-10 h-[48px] flex items-center gap-2">
         <Icon size={36} />
-        <ScrambledText
-          className="scrambled-text-demo font-semibold font-mono! text-white !text-2xl leading-none"
-          radius={30}
-          duration={1.2}
-          speed={0.5}
-          scrambleChars=":."
-        >
+        <span className="scrambled-text-demo font-m1 font-semibold !text-transparent !text-2xl leading-none bg-gradient-to-r from-zinc-100 via-zinc-300 to-zinc-500 bg-clip-text">
           aurel.
-        </ScrambledText>
+        </span>
       </div>
 
       {/* Glassmorphism Navbar */}
