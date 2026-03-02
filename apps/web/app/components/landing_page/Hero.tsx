@@ -3,9 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Dither from "@/components/Dither";
-import GradientText from "@/components/GradientText";
 import { LoginForm } from "@/components/login-form";
-import ScrambledText from "@/components/ScrambledText";
 import Terminal from "@/app/components/Terminal";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
