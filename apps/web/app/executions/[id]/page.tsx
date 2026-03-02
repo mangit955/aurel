@@ -2,6 +2,9 @@ import ExecutionViewer from "@/app/components/ExecutionViewer";
 import Navbar from "@/app/dashboard/Navbar";
 import { Activity } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function ExecutionDetailPage({
   params,
 }: {

@@ -20,6 +20,9 @@ import {
 import { PulsatingButton } from "../components/ui/pulsating-button";
 import ShinyText from "@/components/ShinyText";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 const statusStyles: Record<string, string> = {
   success: "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30",
   failed: "bg-red-500/15 text-red-300 border border-red-500/30",
