@@ -12,12 +12,12 @@ export function IfNode({ id, data }: any) {
   const color =
     data.executionStatus === "failed"
       ? "border-destructive/50 bg-destructive/10"
-      : data.executionStatus === "success"
+    : data.executionStatus === "success"
         ? "border-green-400 bg-green-500/10"
-        : "border-border bg-card";
+        : "border-zinc-700/90 bg-zinc-900/95";
 
   return (
-    <BaseNode className={`group relative bg-zinc-900 border-zinc-400 ${color}`}>
+    <BaseNode className={`group relative ${color}`}>
       <div className="flex flex-col items-center relative py-2">
         <div className="text-yellow-800 font-semibold">
           <Signpost size={24} />

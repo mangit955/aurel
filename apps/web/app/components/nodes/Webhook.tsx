@@ -12,14 +12,14 @@ export function WebhookNode({ id, data }: any) {
 
   const color =
     data.executionStatus === "failed"
-      ? "bg-red-200"
+      ? "border-red-400/60 bg-red-500/10"
       : data.executionStatus === "success"
-        ? "bg-green-200"
-        : "bg-gray-100";
+        ? "border-emerald-400/60 bg-emerald-500/10"
+        : "border-zinc-700/90 bg-zinc-900/95";
 
   return (
-    <BaseNode className={`group relative bg-zinc-900 border-zinc-400 ${color}`}>
-      <div className="flex justify-between items-center text-blue-800 font-semibold">
+    <BaseNode className={`group relative ${color}`}>
+      <div className="flex items-center justify-between font-semibold text-zinc-100">
         <span>
           <Webhook size={24} />
         </span>
@@ -30,7 +30,7 @@ export function WebhookNode({ id, data }: any) {
           ✕
         </button>
       </div>
-      <div className="text-xs pt-2 text-zinc-200 truncate">
+      <div className="truncate pt-2 text-xs text-zinc-300">
         {data.webhookUrl || "No URL set"}
       </div>
       <Handle

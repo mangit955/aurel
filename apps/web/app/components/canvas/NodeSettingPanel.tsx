@@ -56,9 +56,12 @@ export function NodeSettingsPanel() {
         }
       }}
     >
-      <SheetContent side="right">
-        <SheetHeader>
-          <SheetTitle>Node Settings</SheetTitle>
+      <SheetContent
+        side="right"
+        className="border-zinc-800/90 bg-zinc-950/95 text-zinc-100"
+      >
+        <SheetHeader className="border-b border-zinc-800/80">
+          <SheetTitle className="text-zinc-100">Node Settings</SheetTitle>
         </SheetHeader>
 
         {node && (
@@ -102,7 +105,7 @@ export function NodeSettingsPanel() {
                     </Label>
                     <select
                       id="operator"
-                      className="w-full border rounded-md px-3 py-2 text-sm"
+                      className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none focus-visible:ring-2 focus-visible:ring-zinc-500"
                       value={
                         typeof node.data?.operator === "string"
                           ? node.data?.operator
@@ -173,7 +176,7 @@ export function NodeSettingsPanel() {
                     </Label>
                     <select
                       id="webhookMethod"
-                      className="w-full border rounded-md px-3 py-2 text-sm"
+                      className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none focus-visible:ring-2 focus-visible:ring-zinc-500"
                       value={
                         typeof node.data?.method === "string"
                           ? node.data.method
@@ -188,17 +191,17 @@ export function NodeSettingsPanel() {
                     </select>
                   </div>
 
-                  <div className="text-xs text-gray-500 space-y-2">
+                  <div className="space-y-2 text-xs text-zinc-500">
                     <div>Endpoint:</div>
 
-                    <div className="mt-1 break-all font-mono text-[11px] bg-gray-100 p-2 rounded">
+                    <div className="mt-1 break-all rounded bg-zinc-900 p-2 font-mono text-[11px] text-zinc-300">
                       {`${typeof window !== "undefined" ? window.location.origin : ""}/api/webhook/${node.data?.path || "your-path"}`}
                     </div>
 
                     <Button
                       type="button"
                       variant="outline"
-                      className="cursor-pointer hover:bg-zinc-300  hover:border-zinc-500!"
+                      className="cursor-pointer border-zinc-600 bg-zinc-900 text-zinc-100 hover:bg-zinc-800 hover:border-zinc-500!"
                       size="sm"
                       onClick={() => {
                         const fullUrl = `${window.location.origin}/api/webhook/${node.data?.path || "your-path"}`;
@@ -227,7 +230,7 @@ export function NodeSettingsPanel() {
                       }
                       placeholder="e.g. userName"
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="mt-1 text-xs text-zinc-500">
                       This will be available to next nodes as {"{{key}}"}
                     </p>
                   </div>
@@ -253,7 +256,7 @@ export function NodeSettingsPanel() {
                     />
                   </div>
 
-                  <div className="text-xs text-gray-600 bg-gray-100 p-2 rounded font-mono break-all">
+                  <div className="break-all rounded bg-zinc-900 p-2 font-mono text-xs text-zinc-400">
                     Preview:{" "}
                     {node.data?.key
                       ? `{{${node.data.key}}} = ${node.data?.value || "..."}`

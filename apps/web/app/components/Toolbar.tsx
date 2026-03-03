@@ -93,14 +93,17 @@ export function Toolbar({ workflowId }: { workflowId?: string }) {
   };
 
   return (
-    <div className="space-x-2 flex">
+    <div className="flex items-center gap-2">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="bg-secondary text-secondary-foreground p-1 px-2 cursor-pointer rounded-md border flex items-center gap-1">
+          <button className="flex cursor-pointer items-center gap-1 rounded-md border border-zinc-700/90 bg-zinc-900 px-2 py-1 text-sm text-zinc-200 transition hover:border-zinc-500 hover:bg-zinc-800">
             Add Node <ChevronDown size={14} />
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
+        <DropdownMenuContent
+          align="start"
+          className="border-zinc-700 bg-zinc-900 text-zinc-100"
+        >
           <DropdownMenuItem
             className="cursor-pointer"
             onClick={() => addNode("webhookTrigger")}
@@ -142,7 +145,7 @@ export function Toolbar({ workflowId }: { workflowId?: string }) {
       <button
         onClick={undo}
         disabled={!canUndo}
-        className="bg-secondary text-secondary-foreground p-1 px-2 cursor-pointer rounded-md border disabled:opacity-50 disabled:cursor-not-allowed"
+        className="cursor-pointer rounded-md border border-zinc-700/90 bg-zinc-900 p-1 px-2 text-zinc-200 transition hover:border-zinc-500 hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50"
         title="Undo"
       >
         <span className="flex items-center gap-1">
@@ -152,7 +155,7 @@ export function Toolbar({ workflowId }: { workflowId?: string }) {
       <button
         onClick={redo}
         disabled={!canRedo}
-        className="bg-secondary text-secondary-foreground p-1 px-2 cursor-pointer rounded-md border disabled:opacity-50 disabled:cursor-not-allowed"
+        className="cursor-pointer rounded-md border border-zinc-700/90 bg-zinc-900 p-1 px-2 text-zinc-200 transition hover:border-zinc-500 hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50"
         title="Redo"
       >
         <span className="flex items-center gap-1">
@@ -164,7 +167,7 @@ export function Toolbar({ workflowId }: { workflowId?: string }) {
         <button
           onClick={handleRun}
           disabled={isRunning}
-          className="bg-orange-500 hover:bg-orange-600 gap-2 flex items-center font-semibold text-white p-1 px-2 cursor-pointer rounded-md disabled:opacity-50"
+          className="flex cursor-pointer items-center gap-2 rounded-md border border-orange-500/35 bg-orange-500/20 p-1 px-2 font-semibold text-orange-200 transition hover:border-orange-400/60 hover:bg-orange-500/30 disabled:opacity-50"
         >
           <Flask size={20} />
           {isRunning ? "Running..." : "Run Workflow"}
