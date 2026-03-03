@@ -14,7 +14,13 @@ import { Label } from "@/app/components/ui/label";
 import { Button } from "@/app/components/ui/button";
 import { useState, useEffect } from "react";
 
-export function NodeSettingsPanel() {
+export function NodeSettingsPanel({
+  workflowId,
+  webhookSecret,
+}: {
+  workflowId: string;
+  webhookSecret: string;
+}) {
   const activeSettingsNodeId = useWorkflowStore((s) => s.activeSettingsNodeId);
   const setActiveSettingsNode = useWorkflowStore(
     (s) => s.setActiveSettingsNode,
@@ -46,6 +52,11 @@ export function NodeSettingsPanel() {
     updateNodeData(node.id, { label });
     setActiveSettingsNode(null);
   };
+
+  const webhookEndpoint =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/api/webhooks/${workflowId}/${webhookSecret || "your-secret"}`
+      : `/api/webhooks/${workflowId}/${webhookSecret || "your-secret"}`;
 
   return (
     <Sheet
@@ -195,7 +206,7 @@ export function NodeSettingsPanel() {
                     <div>Endpoint:</div>
 
                     <div className="mt-1 break-all rounded bg-zinc-900 p-2 font-mono text-[11px] text-zinc-300">
-                      {`${typeof window !== "undefined" ? window.location.origin : ""}/api/webhook/${node.data?.path || "your-path"}`}
+                      {webhookEndpoint}
                     </div>
 
                     <Button
@@ -204,8 +215,7 @@ export function NodeSettingsPanel() {
                       className="cursor-pointer border-zinc-600 bg-zinc-900 text-zinc-100 hover:bg-zinc-800 hover:border-zinc-500!"
                       size="sm"
                       onClick={() => {
-                        const fullUrl = `${window.location.origin}/api/webhook/${node.data?.path || "your-path"}`;
-                        navigator.clipboard.writeText(fullUrl);
+                        navigator.clipboard.writeText(webhookEndpoint);
                       }}
                     >
                       Copy URL
@@ -355,6 +365,10 @@ export function NodeSettingsPanel() {
                         updateNodeData(node.id, { body: e.target.value })
                       }
                     />
+                    <p className="text-xs text-zinc-500 mt-2">
+                      You can use dynamic fields like {"{{orderId}}"} or{" "}
+                      {"{{customerEmail}}"}
+                    </p>
                   </div>
                 </div>
               )}

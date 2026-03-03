@@ -2,13 +2,27 @@
 
 import { useState } from "react";
 import useSWR from "swr";
-import { ReactFlow, Background, Controls } from "@xyflow/react";
+import {
+  Background,
+  BackgroundVariant,
+  Controls,
+  MiniMap,
+  ReactFlow,
+} from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { X } from "lucide-react";
 import ExecutionNode from "./execution/ExecutionNode";
 
 const nodeTypes = {
   executionNode: ExecutionNode,
+};
+
+const getMiniMapNodeColor = (node: any) => {
+  const status = String(node?.data?.executionStatus ?? "").toLowerCase();
+  if (status === "success") return "#10b981";
+  if (status === "failed") return "#ef4444";
+  if (status === "running") return "#f59e0b";
+  return "#52525b";
 };
 
 const fetcher = async (url: string) => {
@@ -77,6 +91,7 @@ export default function ExecutionViewer({
   return (
     <div className="relative h-[70vh] w-full overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950/70">
       <ReactFlow
+        className="editor-flow"
         nodes={decoratedNodes.map((n: any) => ({
           ...n,
           type: "executionNode",
@@ -84,10 +99,34 @@ export default function ExecutionViewer({
         edges={execution.workflow.edges}
         nodeTypes={nodeTypes}
         onNodeClick={(_, node) => setSelectedNode(node)}
+        minZoom={0.35}
+        maxZoom={1.7}
         fitView
+        fitViewOptions={{ padding: 0.2 }}
       >
-        <Background />
-        <Controls />
+        <Background
+          className="editor-flow-dots"
+          variant={BackgroundVariant.Dots}
+          color="#a1a1aa"
+          gap={20}
+          size={2}
+        />
+        <MiniMap
+          className="!bg-zinc-950/95 !border !border-zinc-700/80 !rounded-lg !shadow-[0_8px_24px_rgba(0,0,0,0.4)]"
+          position="top-right"
+          bgColor="rgba(9, 9, 11, 0.95)"
+          nodeColor={getMiniMapNodeColor}
+          nodeStrokeColor={() => "#e4e4e7"}
+          nodeStrokeWidth={1.2}
+          nodeBorderRadius={3}
+          maskColor="rgba(9, 9, 11, 0.58)"
+          maskStrokeColor="#d4d4d8"
+          maskStrokeWidth={1.2}
+          pannable
+          zoomable
+          ariaLabel="Execution minimap"
+        />
+        <Controls className="editor-flow-controls" showInteractive={false} />
       </ReactFlow>
       {selectedNode && (
         <div className="absolute right-4 top-4 z-20 w-[22rem] rounded-xl border border-zinc-700 bg-zinc-900/95 p-4 text-zinc-100 shadow-xl backdrop-blur">

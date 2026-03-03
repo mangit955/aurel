@@ -28,7 +28,14 @@ export default async function EditorPage({ params }: EditorPageProps) {
 
   const prisma = await getPrisma();
   if (!prisma) {
-    return <EditorClient workflowId={id} initialNodes={[]} initialEdges={[]} />;
+    return (
+      <EditorClient
+        workflowId={id}
+        webhookSecret=""
+        initialNodes={[]}
+        initialEdges={[]}
+      />
+    );
   }
 
   const workflow = await prisma.workflow.findFirst({
@@ -39,12 +46,20 @@ export default async function EditorPage({ params }: EditorPageProps) {
   });
 
   if (!workflow) {
-    return <EditorClient workflowId={id} initialNodes={[]} initialEdges={[]} />;
+    return (
+      <EditorClient
+        workflowId={id}
+        webhookSecret=""
+        initialNodes={[]}
+        initialEdges={[]}
+      />
+    );
   }
 
   return (
     <EditorClient
       workflowId={workflow.id}
+      webhookSecret={workflow.webhookSecret}
       initialNodes={(workflow.nodes as unknown as Node[]) ?? []}
       initialEdges={(workflow.edges as unknown as Edge[]) ?? []}
     />

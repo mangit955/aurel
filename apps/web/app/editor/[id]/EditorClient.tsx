@@ -21,12 +21,14 @@ import { Activity, LayoutDashboard, LogOutIcon, UserIcon } from "lucide-react";
 
 type EditorClientProps = {
   workflowId: string;
+  webhookSecret: string;
   initialNodes: Node[];
   initialEdges: Edge[];
 };
 
 export function EditorClient({
   workflowId,
+  webhookSecret,
   initialNodes,
   initialEdges,
 }: EditorClientProps) {
@@ -103,7 +105,10 @@ export function EditorClient({
 
       <div className="relative z-0">
         <FlowCanvas />
-        <NodeSettingsPanel />
+        <NodeSettingsPanel
+          workflowId={workflowId}
+          webhookSecret={webhookSecret}
+        />
       </div>
     </div>
   );

@@ -7,7 +7,14 @@ import { LoginForm } from "@/components/login-form";
 import Terminal from "@/app/components/Terminal";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
-import { CreditCardIcon, Home, LogOutIcon, SettingsIcon } from "lucide-react";
+import {
+  CreditCardIcon,
+  Home,
+  Layers,
+  LayoutDashboard,
+  LogOutIcon,
+  SettingsIcon,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -138,6 +145,13 @@ export default function HeroBackground() {
               <DropdownMenuItem className="cursor-pointer">
                 <CreditCardIcon />
                 Billing
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => router.push("/dashboard")}
+              >
+                <Layers />
+                Editor
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer">
                 <SettingsIcon />

@@ -1,5 +1,3 @@
-// apps/worker/engine/executor.ts
-
 import { prisma } from "@aurel/db";
 import { executeNode } from "../executors";
 
@@ -100,14 +98,16 @@ export async function executeWorkflow(
       // Queue next nodes — pass this node's output as their input
       const nextNodes = adjacency.get(nodeId) || [];
       nextNodes.forEach(({ targetId, sourceHandle }) => {
-        // For IF node: only follow the branch matching the output
         if (node.type === "ifNode" || node.type === "ifFilter") {
-          // Pass the ORIGINAL input along to the downstream nodes!
+          // IF node does not transform data — just chooses branch.
+          // Pass original input forward unchanged.
           if (sourceHandle === (output as any).data?.branch) {
-            queue.push({ nodeId: targetId, input: input });
+            queue.push({ nodeId: targetId, input });
           }
         } else {
-          queue.push({ nodeId: targetId, input: output });
+          // For normal nodes, pass ONLY business data forward (not metadata like status/httpStatus)
+          const nextInput = output?.data !== undefined ? output.data : output;
+          queue.push({ nodeId: targetId, input: nextInput });
         }
       });
     } catch (err: any) {

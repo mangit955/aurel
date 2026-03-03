@@ -31,8 +31,10 @@ export async function httpExecutor(node: any, input: any) {
 
     return {
       status: "success",
-      data: response.data,
-      httpStatus: response.status,
+      data: {
+        ...input,
+        httpResponse: response.data,
+      },
     };
   } catch (error: any) {
     throw new Error(error.message); // ✅ always throw
