@@ -21,7 +21,7 @@ export function WebhookNode({ id, data }: any) {
     <BaseNode className={`group relative ${color}`}>
       <div className="flex items-center justify-between font-semibold text-zinc-100">
         <span>
-          <Webhook size={24} />
+          <Webhook fill="white" size={24} />
         </span>
         <button
           onClick={handleDelete}
