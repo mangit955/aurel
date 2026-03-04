@@ -23,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Icon from "@/public/icon";
+import { Highlighter } from "@/components/ui/highlighter";
 
 export default function HeroBackground() {
   const router = useRouter();
@@ -108,7 +109,9 @@ export default function HeroBackground() {
           <div className="flex font-semibold items-center gap-8 text-sm text-white">
             <span>Features</span>
             <span>Pricing</span>
-            <span>Docs</span>
+            <Link href="/docs" className="hover:text-[#FDEFC2] transition-colors">
+              Docs
+            </Link>
             <span>About</span>
           </div>
         </div>
@@ -181,7 +184,10 @@ export default function HeroBackground() {
 
       <div className="absolute  inset-0 flex flex-col items-center justify-center text-center px-6">
         <span className="text-5xl  font-semibold font-mono text-zinc-200">
-          Build workflows without code
+          Build workflows{" "}
+          <Highlighter action="underline" color="#FDEFC2">
+            without code.
+          </Highlighter>
         </span>
         <p className="mt-4 backdrop-blur-sm rounded-md max-w-xl font-sans font-semibold text-md leading-relaxed text-zinc-400">
           Automate your backend logic visually. Triggers, actions, and branching

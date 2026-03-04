@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Icon from "@/public/icon";
 import { NoiseBackground } from "@/components/ui/noise-background";
+import { Highlighter } from "@/components/ui/highlighter";
 
 const productLinks = [
   { label: "Workflow Builder", href: "/dashboard" },
@@ -33,7 +34,7 @@ export default function LandingFooter() {
                 Ready to launch
               </p>
               <h3 className="mt-2 text-xl font-semibold text-zinc-100 md:text-2xl">
-                Build and ship your first workflow in minutes
+                Build and ship your first workflow in minutes !
               </h3>
             </div>
             <NoiseBackground

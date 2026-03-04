@@ -8,6 +8,7 @@ import {
   useTransform,
 } from "framer-motion";
 import { CheckCircle2, MessageCircle, MousePointer2 } from "lucide-react";
+import { PulsatingButton } from "../ui/pulsating-button";
 
 export default function LandingFeaturedStory() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -62,14 +63,24 @@ export default function LandingFeaturedStory() {
                     y: cardY,
                   }
             }
-            className="rounded-3xl border border-white/12 bg-zinc-900/75 p-6 shadow-[0_30px_90px_rgba(0,0,0,0.5)] backdrop-blur-sm md:p-8"
+            className="rounded-3xl border border-white/12 bg-zinc-900/ p-6 shadow-[0_30px_90px_rgba(0,0,0,0.5)] backdrop-blur-sm md:p-8"
           >
             <div className="flex items-center justify-between gap-4">
               <p className="text-xs uppercase tracking-[0.24em] text-zinc-500">
-                Live Workflow
+                <span className="flex items-center gap-2">
+                  <PulsatingButton
+                    aria-label="Live status"
+                    pulseColor="#22c55e"
+                    duration="1.5s"
+                    className="h-2 w-2 rounded-full bg-emerald-500 p-0 text-transparent shadow-none pointer-events-none"
+                  >
+                    .
+                  </PulsatingButton>{" "}
+                  Live Workflow
+                </span>
               </p>
               <span className="rounded-full border border-emerald-300/30 bg-emerald-300/10 px-3 py-1 text-xs text-emerald-200">
-                Running
+                Running...
               </span>
             </div>
 
@@ -83,10 +94,12 @@ export default function LandingFeaturedStory() {
 
             <div className="mt-7 space-y-3">
               <div className="rounded-xl border border-white/12 bg-white/5 p-3 text-sm text-zinc-100">
-                Trigger: <span className="text-zinc-300">`invoice.created`</span>
+                Trigger:{" "}
+                <span className="text-zinc-300">`invoice.created`</span>
               </div>
               <div className="rounded-xl border border-white/12 bg-white/5 p-3 text-sm text-zinc-100">
-                Condition: <span className="text-zinc-300">amount {">"} 10000</span>
+                Condition:{" "}
+                <span className="text-zinc-300">amount {">"} 10000</span>
               </div>
               <div className="rounded-xl border border-white/12 bg-white/5 p-3 text-sm text-zinc-100">
                 Action:{" "}

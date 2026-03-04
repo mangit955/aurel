@@ -60,22 +60,12 @@ export default function Terminal({
   return (
     <div className="mt-10 w-full max-w-2xl">
       <div className="relative overflow-hidden rounded-xl border border-zinc-700/50 bg-zinc-900 shadow-[0_20px_80px_rgba(0,0,0,0.6)]">
-        <ShineBorder
-          shineColor={
-            theme.theme === "dark"
-              ? ["#FFF7D6", "#FFFBEB", "#FDEFC2"]
-              : ["#F5E6B8", "#FFF7D6", "#E8D7A3"]
-          }
-          borderWidth={1}
-          duration={14}
-        />
-
         <div className="flex items-center justify-between border-b border-zinc-700/50 bg-zinc-800/80 px-4 py-2">
           <div className="flex items-center gap-3">
             <div className="flex gap-2">
-              <span className="h-3 w-3 rounded-full bg-zinc-500/60" />
-              <span className="h-3 w-3 rounded-full bg-zinc-500/60" />
-              <span className="h-3 w-3 rounded-full bg-zinc-500/60" />
+              <span className="h-3 w-3 rounded-full bg-red-500/60" />
+              <span className="h-3 w-3 rounded-full bg-yellow-500/60" />
+              <span className="h-3 w-3 rounded-full bg-green-500/60" />
             </div>
             <span className="font-mono text-sm text-zinc-400">
               &gt;_ aurel.dev
