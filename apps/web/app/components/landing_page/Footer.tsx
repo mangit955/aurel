@@ -27,7 +27,7 @@ export default function LandingFooter() {
   return (
     <footer className="border-t border-white/10 bg-zinc-950 text-zinc-300">
       <div className="mx-auto w-full max-w-7xl px-6 py-14 md:px-10">
-        <div className="mb-10 rounded-2xl border border-white/10 bg-gradient-to-r from-zinc-900 via-zinc-900 to-zinc-800 px-6 py-6 md:px-8 md:py-7">
+        <div className="mb-10 rounded-2xl border border-white/10 bg-zinc-900 px-6 py-6 md:px-8 md:py-7">
           <div className="flex flex-col items-start justify-between gap-5 md:flex-row md:items-center">
             <div>
               <p className="text-xs uppercase tracking-[0.24em] text-zinc-400">

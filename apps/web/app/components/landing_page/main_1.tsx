@@ -115,7 +115,7 @@ export default function LandingFeaturedStory() {
             </div>
           </motion.article>
 
-          <div className="rounded-3xl border border-white/12 bg-zinc-900/65 p-6 backdrop-blur-sm md:p-8">
+          <div className="rounded-3xl border border-white/12 bg-zinc-950 p-6 backdrop-blur-sm md:p-8">
             <div className="relative h-[360px] md:h-[390px]">
               <svg
                 className="absolute left-3 top-3 h-[330px] w-8 md:left-4 md:h-[350px]"
