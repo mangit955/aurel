@@ -1,7 +1,6 @@
 "use client";
 
-import type { CSSProperties } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Dither from "@/components/Dither";
 import { LoginForm } from "@/components/login-form";
@@ -30,45 +29,12 @@ export default function HeroBackground() {
   const { data: session } = useSession();
   const [showLogin, setShowLogin] = useState(false);
   const [isCreatingWorkflow, setIsCreatingWorkflow] = useState(false);
-  const heroRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (session?.user) {
       setShowLogin(false);
     }
   }, [session]);
-
-  useEffect(() => {
-    const container = heroRef.current;
-    if (!container || window.matchMedia("(pointer: coarse)").matches) return;
-
-    let raf = 0;
-    const handleMove = (event: MouseEvent) => {
-      const rect = container.getBoundingClientRect();
-      const relX = (event.clientX - rect.left) / rect.width - 0.5;
-      const relY = (event.clientY - rect.top) / rect.height - 0.5;
-
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        container.style.setProperty("--parallax-x", `${relX * 110}px`);
-        container.style.setProperty("--parallax-y", `${relY * 72}px`);
-      });
-    };
-
-    const reset = () => {
-      container.style.setProperty("--parallax-x", "0px");
-      container.style.setProperty("--parallax-y", "0px");
-    };
-
-    container.addEventListener("mousemove", handleMove);
-    container.addEventListener("mouseleave", reset);
-
-    return () => {
-      cancelAnimationFrame(raf);
-      container.removeEventListener("mousemove", handleMove);
-      container.removeEventListener("mouseleave", reset);
-    };
-  }, []);
 
   const handleCreateWorkflow = async (name: string) => {
     if (!name) {
@@ -109,16 +75,7 @@ export default function HeroBackground() {
     "User";
 
   return (
-    <div
-      ref={heroRef}
-      className="relative w-full h-screen overflow-hidden"
-      style={
-        {
-          "--parallax-x": "0px",
-          "--parallax-y": "0px",
-        } as CSSProperties
-      }
-    >
+    <div className="relative w-full h-screen overflow-hidden">
       {/* Dither Background */}
       <div
         className="absolute inset-0 w-full h-full pointer-events-auto"
@@ -215,58 +172,11 @@ export default function HeroBackground() {
           <button
             type="button"
             onClick={() => setShowLogin(true)}
-            className="h-[30px] px-5 cursor-pointer rounded-md border border-white/30 bg-white text-black text-sm font-semibold flex items-center justify-center hover:bg-zinc-200 transition-colors"
+            className="h-[30px] px-5 cursor-pointer rounded-md border border-white/30 bg-[#FDEFC2] text-black text-sm font-semibold flex items-center justify-center hover:bg-[#F6DE8A] transition-colors"
           >
             Sign in
           </button>
         )}
-      </div>
-
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[44vh]">
-        <div
-          className="absolute left-1/2 top-[18%] h-[26rem] w-[26rem] -translate-x-1/2 rounded-full bg-orange-200/20 blur-3xl transition-transform duration-300 ease-out"
-          style={{
-            transform:
-              "translate3d(calc(-50% + (var(--parallax-x) * -0.12)), calc(var(--parallax-y) * -0.08), 0)",
-          }}
-        />
-        <div
-          className="absolute inset-x-[-14%] bottom-[-2%] h-[52%] bg-gradient-to-t from-zinc-950/85 via-zinc-900/60 to-transparent blur-[1px] transition-transform duration-300 ease-out"
-          style={{
-            clipPath:
-              "polygon(0% 100%, 8% 66%, 14% 74%, 20% 56%, 26% 70%, 36% 44%, 46% 64%, 55% 40%, 64% 56%, 73% 33%, 82% 58%, 91% 43%, 100% 62%, 100% 100%)",
-            transform:
-              "translate3d(calc(var(--parallax-x) * -0.2), calc(var(--parallax-y) * -0.12), 0)",
-          }}
-        />
-        <div
-          className="absolute inset-x-[-10%] bottom-[-8%] h-[60%] bg-gradient-to-t from-zinc-900/95 via-zinc-800/82 to-transparent transition-transform duration-300 ease-out"
-          style={{
-            clipPath:
-              "polygon(0% 100%, 0% 73%, 10% 58%, 18% 68%, 28% 48%, 37% 70%, 49% 35%, 58% 62%, 66% 46%, 75% 66%, 84% 41%, 92% 56%, 100% 45%, 100% 100%)",
-            transform:
-              "translate3d(calc(var(--parallax-x) * -0.35), calc(var(--parallax-y) * -0.24), 0)",
-          }}
-        />
-        <div
-          className="absolute inset-x-[-8%] bottom-[-15%] h-[70%] bg-gradient-to-t from-zinc-800 via-zinc-700/95 to-zinc-500/28 transition-transform duration-300 ease-out"
-          style={{
-            clipPath:
-              "polygon(0% 100%, 0% 82%, 7% 67%, 15% 78%, 24% 54%, 33% 82%, 43% 42%, 52% 74%, 61% 50%, 72% 79%, 82% 46%, 90% 71%, 100% 58%, 100% 100%)",
-            transform:
-              "translate3d(calc(var(--parallax-x) * -0.55), calc(var(--parallax-y) * -0.38), 0)",
-          }}
-        />
-        <div
-          className="absolute inset-x-[-5%] bottom-[-19%] h-[74%] bg-gradient-to-t from-zinc-950 via-zinc-900/95 to-zinc-700/10 transition-transform duration-300 ease-out"
-          style={{
-            clipPath:
-              "polygon(0% 100%, 0% 86%, 9% 72%, 18% 90%, 29% 58%, 37% 85%, 47% 53%, 58% 88%, 67% 60%, 77% 90%, 86% 66%, 93% 82%, 100% 74%, 100% 100%)",
-            transform:
-              "translate3d(calc(var(--parallax-x) * -0.8), calc(var(--parallax-y) * -0.52), 0)",
-          }}
-        />
-        <div className="absolute inset-x-0 bottom-0 h-[16%] bg-gradient-to-t from-black/85 via-black/45 to-transparent" />
       </div>
 
       <div className="absolute  inset-0 flex flex-col items-center justify-center text-center px-6">
