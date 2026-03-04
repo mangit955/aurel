@@ -151,21 +151,21 @@ export default function ExecutionViewer({
           <div className="space-y-3 text-xs">
             <div>
               <p className="mb-1 font-medium text-zinc-400">Input</p>
-              <pre className="max-h-28 overflow-auto rounded-md border border-zinc-800 bg-zinc-950 p-2 whitespace-pre-wrap text-[11px] text-zinc-300">
+              <pre className="max-h-28 overflow-auto break-all rounded-md border border-zinc-800 bg-zinc-950 p-2 whitespace-pre-wrap text-[11px] text-zinc-300">
                 {JSON.stringify(selectedNode.data.executionInput, null, 2)}
               </pre>
             </div>
 
             <div>
               <p className="mb-1 font-medium text-zinc-400">Output</p>
-              <pre className="max-h-28 overflow-auto rounded-md border border-zinc-800 bg-zinc-950 p-2 whitespace-pre-wrap text-[11px] text-zinc-300">
+              <pre className="max-h-28 overflow-auto break-all rounded-md border border-zinc-800 bg-zinc-950 p-2 whitespace-pre-wrap text-[11px] text-zinc-300">
                 {JSON.stringify(selectedNode.data.executionOutput, null, 2)}
               </pre>
             </div>
           </div>
 
           {selectedNode.data.executionError && (
-            <div className="mt-3 rounded-md border border-red-900/50 bg-red-950/40 p-2 text-xs text-red-200">
+            <div className="mt-3 max-h-28 overflow-auto break-words rounded-md border border-red-900/50 bg-red-950/40 p-2 text-xs text-red-200">
               <b>Error:</b> {selectedNode.data.executionError}
             </div>
           )}

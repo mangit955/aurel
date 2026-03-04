@@ -158,3 +158,54 @@ export async function PATCH(
 
   return NextResponse.json(created);
 }
+
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const session = await auth();
+  const userEmail = session?.user?.email;
+  if (!userEmail) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { id } = await params;
+  const prisma = await getPrisma();
+
+  if (!prisma) {
+    const list = workflowFallbackStore[userEmail] ?? [];
+    const exists = list.some((item) => item.id === id);
+    if (!exists) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    workflowFallbackStore[userEmail] = list.filter((item) => item.id !== id);
+    return NextResponse.json({ ok: true });
+  }
+
+  const workflow = await prisma.workflow.findFirst({
+    where: {
+      id,
+      user: { email: userEmail },
+    },
+    select: { id: true },
+  });
+
+  if (!workflow) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  try {
+    await prisma.$transaction([
+      prisma.execution.deleteMany({ where: { workflowId: id } }),
+      prisma.workflow.delete({ where: { id } }),
+    ]);
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("Failed to delete workflow:", error);
+    return NextResponse.json(
+      { error: "Failed to delete workflow" },
+      { status: 500 },
+    );
+  }
+}

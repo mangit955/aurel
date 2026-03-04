@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import useSWR from "swr";
-import { ArrowUpRight, Search, Workflow } from "lucide-react";
+import { ArrowUpRight, Search, Trash2, Workflow } from "lucide-react";
 import AnimatedList from "@/components/AnimatedList";
 
 type Workflow = {
@@ -21,8 +21,39 @@ const fetcher = async (url: string): Promise<Workflow[]> => {
 
 export function WorkflowsList() {
   const [search, setSearch] = useState("");
-  const { data, error, isLoading } = useSWR("/api/workflows", fetcher);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const { data, error, isLoading, mutate } = useSWR("/api/workflows", fetcher);
   const normalizedQuery = search.trim().toLowerCase();
+
+  const deleteWorkflow = async (workflow: Workflow) => {
+    if (!confirm(`Delete workflow "${workflow.name}"?`)) return;
+
+    setDeletingId(workflow.id);
+    try {
+      const response = await fetch(`/api/workflows/${workflow.id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as
+          | { error?: string }
+          | null;
+        throw new Error(payload?.error ?? "Failed to delete workflow");
+      }
+      await mutate(
+        (current) => (current ?? []).filter((item) => item.id !== workflow.id),
+        false,
+      );
+    } catch (err) {
+      console.error(err);
+      alert(
+        err instanceof Error
+          ? err.message
+          : "Failed to delete workflow. Please try again.",
+      );
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   const filteredWorkflows = useMemo(() => {
     if (!data) return [];
@@ -128,24 +159,37 @@ export function WorkflowsList() {
           displayScrollbar
           renderItem={(item) => {
             const workflow = item as Workflow;
+            const isDeleting = deletingId === workflow.id;
             return (
-              <Link
-                href={`/editor/${workflow.id}`}
-                className="group flex h-20 items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 py-4 transition hover:border-zinc-600 hover:bg-zinc-800/80"
-              >
-                <div className="min-w-0">
+              <div className="group flex h-20 items-center justify-between rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 py-4 transition hover:border-zinc-600 hover:bg-zinc-800/80">
+                <Link
+                  href={`/editor/${workflow.id}`}
+                  className="min-w-0 flex-1"
+                >
                   <p className="truncate text-sm font-semibold text-zinc-100">
                     {workflow.name}
                   </p>
                   <p className="mt-1 font-mono text-[11px] text-zinc-500">
                     ID: {workflow.id.slice(0, 12)}...
                   </p>
+                </Link>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => void deleteWorkflow(workflow)}
+                    disabled={isDeleting}
+                    className="inline-flex h-8 items-center gap-1 rounded-md border border-zinc-700 bg-zinc-900 px-2 text-xs font-medium text-zinc-300 transition hover:border-red-500/60 hover:bg-red-500/10 hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    <Trash2 fill="white" size={13} />
+                  </button>
+                  <Link
+                    href={`/editor/${workflow.id}`}
+                    className="inline-flex h-8 w-8 items-center justify-center text-zinc-300 transition hover:border-zinc-500 hover:bg-zinc-800 hover:text-zinc-100"
+                  >
+                    <ArrowUpRight size={14} />
+                  </Link>
                 </div>
-                <ArrowUpRight
-                  size={16}
-                  className="text-zinc-500 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-zinc-200"
-                />
-              </Link>
+              </div>
             );
           }}
         />

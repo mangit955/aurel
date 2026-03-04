@@ -151,7 +151,7 @@ export default function HeroBackground() {
                 onClick={() => router.push("/dashboard")}
               >
                 <Layers />
-                Editor
+                Workflow
               </DropdownMenuItem>
               <DropdownMenuItem className="cursor-pointer">
                 <SettingsIcon />
