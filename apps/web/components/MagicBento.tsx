@@ -179,7 +179,7 @@ const TeamworkBeamDemo: React.FC = () => {
             ref={bottomRightRef}
             className="magic-bento-beam-circle-user bg-white! size-10!"
           >
-            <Clock3 size={20} fill="	#BF40BF" className="text-white" />
+            <Clock3 size={20} fill="#BF40BF" className="text-white" />
           </BeamCircle>
         </div>
       </div>

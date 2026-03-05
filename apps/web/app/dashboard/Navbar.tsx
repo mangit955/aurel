@@ -11,6 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Image from "next/image";
 
 type NavbarProps = {
   onSignIn?: () => void;
@@ -52,7 +53,9 @@ export default function Navbar({ onSignIn }: NavbarProps) {
                   className="flex h-[40px] cursor-pointer items-center gap-2 rounded-md border border-transparent px-3 text-white backdrop-blur-xl transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-0"
                 >
                   {session.user.image ? (
-                    <img
+                    <Image
+                      width={20}
+                      height={20}
                       src={session.user.image}
                       alt={displayName}
                       className="h-7 w-7 rounded-full object-cover"

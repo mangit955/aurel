@@ -48,9 +48,18 @@ export function CreateWorkflowDialog() {
         return;
       }
 
+      const payload = (await response.json().catch(() => null)) as
+        | { id?: string }
+        | null;
+      const workflowId = payload?.id;
+
       setName("");
       setOpen(false);
-      router.refresh();
+      if (!workflowId) {
+        router.refresh();
+        return;
+      }
+      router.push(`/editor/${workflowId}`);
     } finally {
       setIsSubmitting(false);
     }
