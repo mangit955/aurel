@@ -129,14 +129,14 @@ export default function ColorBends({
   noise = 0.1,
 }: ColorBendsProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const rendererRef = useRef<any>(null);
   const rafRef = useRef<number | null>(null);
-  const materialRef = useRef<THREE.ShaderMaterial | null>(null);
+  const materialRef = useRef<any>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
   const rotationRef = useRef<number>(rotation);
   const autoRotateRef = useRef<number>(autoRotate);
-  const pointerTargetRef = useRef<THREE.Vector2>(new THREE.Vector2(0, 0));
-  const pointerCurrentRef = useRef<THREE.Vector2>(new THREE.Vector2(0, 0));
+  const pointerTargetRef = useRef<any>(new THREE.Vector2(0, 0));
+  const pointerCurrentRef = useRef<any>(new THREE.Vector2(0, 0));
   const pointerSmoothRef = useRef<number>(8);
 
   useEffect(() => {
@@ -196,7 +196,7 @@ export default function ColorBends({
       const w = container.clientWidth || 1;
       const h = container.clientHeight || 1;
       renderer.setSize(w, h, false);
-      (material.uniforms.uCanvas.value as THREE.Vector2).set(w, h);
+      (material.uniforms.uCanvas.value as any).set(w, h);
     };
 
     handleResize();
@@ -218,13 +218,13 @@ export default function ColorBends({
       const rad = (deg * Math.PI) / 180;
       const c = Math.cos(rad);
       const s = Math.sin(rad);
-      (material.uniforms.uRot.value as THREE.Vector2).set(c, s);
+      (material.uniforms.uRot.value as any).set(c, s);
 
       const cur = pointerCurrentRef.current;
       const tgt = pointerTargetRef.current;
       const amt = Math.min(1, dt * pointerSmoothRef.current);
       cur.lerp(tgt, amt);
-      (material.uniforms.uPointer.value as THREE.Vector2).copy(cur);
+      (material.uniforms.uPointer.value as any).copy(cur);
       renderer.render(scene, camera);
       rafRef.current = requestAnimationFrame(loop);
     };
@@ -280,7 +280,7 @@ export default function ColorBends({
 
     const arr = (colors || []).filter(Boolean).slice(0, MAX_COLORS).map(toVec3);
     for (let i = 0; i < MAX_COLORS; i++) {
-      const vec = (material.uniforms.uColors.value as THREE.Vector3[])[i];
+      const vec = (material.uniforms.uColors.value as any[])[i];
       if (i < arr.length) vec.copy(arr[i]);
       else vec.set(0, 0, 0);
     }
