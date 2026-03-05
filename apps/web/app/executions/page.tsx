@@ -1,9 +1,10 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import { prisma } from "@aurel/db";
+import { auth } from "../api/auth/[...nextauth]/route";
 import {
   ArrowRight,
-  ArrowUpRight,
   CheckCircle2,
   Clock3,
   XCircle,
@@ -29,14 +30,36 @@ const statusStyles: Record<string, string> = {
   running: "bg-amber-500/15 text-amber-200 border border-amber-500/30",
 };
 
+type ExecutionRow = {
+  id: string;
+  status: string;
+  startedAt: Date;
+  endedAt: Date | null;
+  workflow: { name: string } | null;
+};
+
 export default async function ExecutionsListPage() {
+  const session = await auth();
+  const userEmail = session?.user?.email;
+  if (!userEmail) {
+    redirect("/");
+  }
+
+  const workflowOwnerFilter = { workflow: { user: { email: userEmail } } };
   const [totalExecutions, successCount, failedCount, runningCount, executions] =
     await Promise.all([
-      prisma.execution.count(),
-      prisma.execution.count({ where: { status: "success" } }),
-      prisma.execution.count({ where: { status: "failed" } }),
-      prisma.execution.count({ where: { status: "running" } }),
+      prisma.execution.count({ where: workflowOwnerFilter }),
+      prisma.execution.count({
+        where: { ...workflowOwnerFilter, status: "success" },
+      }),
+      prisma.execution.count({
+        where: { ...workflowOwnerFilter, status: "failed" },
+      }),
+      prisma.execution.count({
+        where: { ...workflowOwnerFilter, status: "running" },
+      }),
       prisma.execution.findMany({
+        where: workflowOwnerFilter,
         include: { workflow: true },
         orderBy: { startedAt: "desc" },
       }),
@@ -140,7 +163,7 @@ export default async function ExecutionsListPage() {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    executions.map((exec: any) => {
+                    (executions as ExecutionRow[]).map((exec) => {
                       const started = new Date(exec.startedAt);
                       const ended = exec.endedAt
                         ? new Date(exec.endedAt)

@@ -1,6 +1,8 @@
 import ExecutionViewer from "@/app/components/ExecutionViewer";
 import Navbar from "@/app/dashboard/Navbar";
 import { Activity } from "lucide-react";
+import { redirect } from "next/navigation";
+import { auth } from "@/app/api/auth/[...nextauth]/route";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -10,6 +12,11 @@ export default async function ExecutionDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const session = await auth();
+  if (!session?.user?.email) {
+    redirect("/");
+  }
+
   const { id } = await params;
   return (
     <div className="relative min-h-screen overflow-hidden bg-black px-6 pb-10 text-zinc-100 md:px-10">

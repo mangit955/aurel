@@ -46,14 +46,7 @@ export default async function EditorPage({ params }: EditorPageProps) {
   });
 
   if (!workflow) {
-    return (
-      <EditorClient
-        workflowId={id}
-        webhookSecret=""
-        initialNodes={[]}
-        initialEdges={[]}
-      />
-    );
+    redirect("/dashboard");
   }
 
   return (

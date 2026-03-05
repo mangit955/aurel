@@ -1,17 +1,25 @@
 import { prisma } from "@aurel/db";
 import { NextResponse } from "next/server";
+import { auth } from "../../auth/[...nextauth]/route";
 
 export async function GET(
-  req: Request,
+  _req: Request,
   context: { params: Promise<{ id: string }> },
 ) {
+  const session = await auth();
+  const userEmail = session?.user?.email;
+  if (!userEmail) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const params = await context.params;
   const { id } = params;
 
-  console.log("Fetching execution with ID:", id, "Type:", typeof id);
-
-  const execution = await prisma.execution.findUnique({
-    where: { id },
+  const execution = await prisma.execution.findFirst({
+    where: {
+      id,
+      workflow: { user: { email: userEmail } },
+    },
     include: {
       workflow: true,
     },
