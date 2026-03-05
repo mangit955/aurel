@@ -34,6 +34,7 @@ export default function LandingFeaturedStory() {
 
   return (
     <section
+      id="featured-section"
       ref={sectionRef}
       className="relative min-h-[170vh] border-y border-white/10 bg-zinc-950 px-6 py-20 md:px-10 md:py-24"
     >
@@ -41,7 +42,7 @@ export default function LandingFeaturedStory() {
         <p className="text-xs uppercase tracking-[0.24em] text-zinc-500">
           Featured
         </p>
-        <h2 className="mt-3 max-w-3xl text-3xl font-semibold leading-tight text-zinc-100 md:text-4xl">
+        <h2 className="mt-3 max-w-3xl font-mono text-3xl font-semibold leading-tight text-zinc-100 md:text-4xl">
           Scroll through one execution timeline and see how collaboration stays
           attached to logic.
         </h2>

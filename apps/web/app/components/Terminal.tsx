@@ -59,13 +59,13 @@ export default function Terminal({
 
   return (
     <div className="mt-10 w-full max-w-2xl">
-      <div className="relative overflow-hidden rounded-xl border border-zinc-700/50 bg-zinc-900 shadow-[0_20px_80px_rgba(0,0,0,0.6)]">
-        <div className="flex items-center justify-between border-b border-zinc-700/50 bg-zinc-800/80 px-4 py-2">
+      <div className="relative overflow-hidden rounded-xl border border-zinc-700/50  shadow-[0_20px_80px_rgba(0,0,0,0.6)]">
+        <div className="flex items-center justify-between border-b border-zinc-700/50   backdrop-blur-md px-4 py-2">
           <div className="flex items-center gap-3">
             <div className="flex gap-2">
-              <span className="h-3 w-3 rounded-full bg-red-500/60" />
-              <span className="h-3 w-3 rounded-full bg-yellow-500/60" />
-              <span className="h-3 w-3 rounded-full bg-green-500/60" />
+              <span className="h-3 w-3 rounded-full bg-red-500/80" />
+              <span className="h-3 w-3 rounded-full bg-yellow-500/80" />
+              <span className="h-3 w-3 rounded-full bg-green-500/80" />
             </div>
             <span className="font-mono text-sm text-zinc-400">
               &gt;_ aurel.dev

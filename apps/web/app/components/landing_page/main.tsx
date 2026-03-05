@@ -7,7 +7,7 @@ import LandingFeaturedStory from "./main_1";
 export default function LandingMain() {
   return (
     <>
-      <section className="relative mt-20 overflow-hidden border-y border-white/10 bg-zinc-950 py-10 text-zinc-100 md:px-8 md:py-12">
+      <section id="platform-overview" className="relative mt-20 overflow-hidden border-y border-white/10 bg-zinc-950 py-10 text-zinc-100 md:px-8 md:py-12">
         <div className="relative z-10 mb-6 text-center">
           <p className="text-xs font-mono uppercase tracking-[0.22em] text-zinc-500">
             Platform Overview

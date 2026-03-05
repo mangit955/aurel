@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {
+  type MouseEvent,
+  useEffect,
+  useState,
+  useRef,
+  type ReactNode,
+} from "react";
 import { useRouter } from "next/navigation";
 import Dither from "@/components/Dither";
 import { LoginForm } from "@/components/login-form";
@@ -24,12 +30,40 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Icon from "@/public/icon";
 import { Highlighter } from "@/components/ui/highlighter";
+import ColorBends from "@/components/ColorBends";
 
 export default function HeroBackground() {
   const router = useRouter();
   const { data: session } = useSession();
   const [showLogin, setShowLogin] = useState(false);
   const [isCreatingWorkflow, setIsCreatingWorkflow] = useState(false);
+
+  const navRef = useRef<HTMLDivElement>(null);
+  const [hoverBox, setHoverBox] = useState<{
+    left: number;
+    width: number;
+    opacity: number;
+  }>({
+    left: 0,
+    width: 0,
+    opacity: 0,
+  });
+
+  const handleNavItemEnter = (el: HTMLElement) => {
+    const navRect = navRef.current?.getBoundingClientRect();
+    const rect = el.getBoundingClientRect();
+    if (!navRect) return;
+
+    setHoverBox({
+      left: rect.left - navRect.left,
+      width: rect.width,
+      opacity: 1,
+    });
+  };
+
+  const handleNavLeave = () => {
+    setHoverBox((prev) => ({ ...prev, opacity: 0 }));
+  };
 
   useEffect(() => {
     if (session?.user) {
@@ -74,6 +108,22 @@ export default function HeroBackground() {
     session?.user?.name?.trim() ||
     session?.user?.email?.split("@")[0] ||
     "User";
+  const navItemClass =
+    "relative z-10 px-2 py-1 rounded-md text-white/85 transition-all duration-300 ease-out hover:-translate-y-[1px] hover:text-[#FDEFC2] hover:drop-shadow-[0_0_10px_rgba(253,239,194,0.35)]";
+
+  const handleSectionScroll = (
+    event: MouseEvent<HTMLAnchorElement>,
+    sectionId: string,
+  ) => {
+    event.preventDefault();
+    const section = document.getElementById(sectionId);
+    if (!section) {
+      return;
+    }
+
+    section.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.history.replaceState(null, "", `#${sectionId}`);
+  };
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
@@ -82,17 +132,22 @@ export default function HeroBackground() {
         className="absolute inset-0 w-full h-full pointer-events-auto"
         style={{ width: "100%", height: "100%" }}
       >
-        <Dither
-          waveSpeed={0.05}
-          waveFrequency={3}
-          waveAmplitude={0.3}
-          waveColor={[0.22, 0.22, 0.22]}
-          colorNum={4}
-          pixelSize={2}
-          disableAnimation={false}
-          enableMouseInteraction={true}
-          mouseRadius={0.25}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(253,239,194,0.08),transparent_45%),radial-gradient(circle_at_80%_10%,rgba(255,255,255,0.06),transparent_38%),linear-gradient(180deg,#0a0a0b_0%,#111113_55%,#09090b_100%)]" />
+        <ColorBends
+          className="opacity-100"
+          colors={["#1a1d27", "#2a3248", "#4a3f2b"]}
+          rotation={17}
+          speed={0.2}
+          scale={2.4}
+          frequency={1}
+          warpStrength={1}
+          mouseInfluence={1.55}
+          parallax={0.5}
+          noise={0.1}
+          transparent
+          autoRotate={0}
         />
+        <div className="absolute inset-0 bg-black/15" />
       </div>
 
       {/* Logo aligned left */}
@@ -105,14 +160,54 @@ export default function HeroBackground() {
 
       {/* Glassmorphism Navbar */}
       <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
-        <div className="h-[36px] min-w-[320px] px-6 rounded-md bg-white/10 backdrop-blur-2xl border border-white/20 shadow-lg flex items-center justify-center gap-8 pointer-events-auto">
+        <div
+          ref={navRef}
+          onMouseLeave={handleNavLeave}
+          className="relative h-[36px] min-w-[320px] px-6 rounded-md bg-white/10 backdrop-blur-2xl border border-white/20 shadow-lg flex items-center justify-center gap-8 pointer-events-auto overflow-hidden"
+        >
+          <div
+            className="absolute top-1/2 -translate-y-1/2 h-[26px] rounded-md bg-white/20 backdrop-blur-md transition-all duration-300 ease-out pointer-events-none"
+            style={{
+              left: hoverBox.left,
+              width: hoverBox.width,
+              opacity: hoverBox.opacity,
+            }}
+          />
+
           <div className="flex font-semibold items-center gap-8 text-sm text-white">
-            <span>Features</span>
-            <span>Pricing</span>
-            <Link href="/docs" className="hover:text-[#FDEFC2] transition-colors">
+            <Link
+              href="#platform-overview"
+              onClick={(event) =>
+                handleSectionScroll(event, "platform-overview")
+              }
+              onMouseEnter={(e) => handleNavItemEnter(e.currentTarget)}
+              className={navItemClass}
+            >
+              Features
+            </Link>
+            <span
+              className={`${navItemClass} cursor-pointer`}
+              onMouseEnter={(e) => handleNavItemEnter(e.currentTarget)}
+            >
+              Pricing
+            </span>
+            <Link
+              href="/docs"
+              className={navItemClass}
+              onMouseEnter={(e) => handleNavItemEnter(e.currentTarget)}
+            >
               Docs
             </Link>
-            <span>About</span>
+            <Link
+              href="#featured-section"
+              onClick={(event) =>
+                handleSectionScroll(event, "featured-section")
+              }
+              onMouseEnter={(e) => handleNavItemEnter(e.currentTarget)}
+              className={navItemClass}
+            >
+              About
+            </Link>
           </div>
         </div>
       </div>
