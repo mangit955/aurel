@@ -276,7 +276,7 @@ export default function HeroBackground() {
             without code.
           </Highlighter>
         </span>
-        <p className="mt-4 backdrop-blur-sm rounded-md max-w-xl font-sans font-semibold text-md leading-relaxed text-zinc-400">
+        <p className="mt-4 max-w-xl font-sans font-semibold text-md leading-relaxed text-zinc-400">
           Automate your backend logic visually. Triggers, actions, and branching
           — all in one powerful canvas.
         </p>

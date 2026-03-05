@@ -35,14 +35,25 @@ export const metadata: Metadata = {
   applicationName: siteName,
 
   keywords: [
-    "form builder",
-    "fillin",
     "aurel",
-    "tally forms",
-    "online forms",
-    "survey builder",
-    "conditional forms",
-    "logic jump forms",
+    "workflow automation",
+    "visual workflow builder",
+    "event driven automation",
+    "node based workflow",
+    "workflow orchestration",
+    "backend automation",
+    "api automation",
+    "zapier alternative",
+    "n8n alternative",
+    "no code automation",
+    "low code automation",
+    "automation platform",
+    "workflow engine",
+    "event driven workflows",
+    "automation builder",
+    "react flow workflow",
+    "queue based workflow",
+    "developer automation tool",
   ],
 
   authors: [{ name: "aurel" }],
@@ -55,7 +66,7 @@ export const metadata: Metadata = {
     siteName: siteName,
     images: [
       {
-        url: "/og1.png",
+        url: "/tw_1.png",
         width: 1200,
         height: 630,
         alt: "aurel workflow automation",
@@ -69,13 +80,13 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "aurel — Workflow automation platform",
     description: description,
-    images: ["/og1.png"],
+    images: ["/tw.png"],
   },
 
   icons: {
     icon: "/icon.svg",
     shortcut: "/icon.svg",
-    apple: "/apple-touch-icon.png",
+    apple: "/icon.svg",
   },
 
   alternates: {

@@ -10,7 +10,7 @@ import { AnimatedBeam } from "@/components/ui/animated-beam";
 import { Ripple } from "@/components/ui/ripple";
 import "./MagicBento.css";
 import DivineMoonIcon from "@/public/icon";
-import { User } from "lucide-react";
+import { Clock3 } from "lucide-react";
 import Webhook from "@/public/webhook";
 import Globe from "@/public/globe";
 import Gmail from "@/public/gmail";
@@ -177,9 +177,9 @@ const TeamworkBeamDemo: React.FC = () => {
           </BeamCircle>
           <BeamCircle
             ref={bottomRightRef}
-            className="magic-bento-beam-circle-user size-10!"
+            className="magic-bento-beam-circle-user bg-white! size-10!"
           >
-            <User size={20} />
+            <Clock3 size={20} fill="	#BF40BF" className="text-white" />
           </BeamCircle>
         </div>
       </div>

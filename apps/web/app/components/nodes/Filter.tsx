@@ -12,7 +12,7 @@ export function IfNode({ id, data }: any) {
   const color =
     data.executionStatus === "failed"
       ? "border-destructive/50 bg-destructive/10"
-    : data.executionStatus === "success"
+      : data.executionStatus === "success"
         ? "border-green-400 bg-green-500/10"
         : "border-zinc-700/90 bg-zinc-900/95";
 
