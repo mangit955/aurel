@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { PulsatingButton } from "@/app/components/ui/pulsating-button";
-import { ShineBorder } from "@/components/ui/shine-border";
 
 type TerminalProps = {
   onCreateWorkflow?: (name: string) => Promise<void> | void;

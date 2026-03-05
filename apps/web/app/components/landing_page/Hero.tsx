@@ -1,14 +1,7 @@
 "use client";
 
-import {
-  type MouseEvent,
-  useEffect,
-  useState,
-  useRef,
-  type ReactNode,
-} from "react";
+import { type MouseEvent, useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import Dither from "@/components/Dither";
 import { LoginForm } from "@/components/login-form";
 import Terminal from "@/app/components/Terminal";
 import Link from "next/link";
@@ -17,7 +10,6 @@ import {
   CreditCardIcon,
   Home,
   Layers,
-  LayoutDashboard,
   LogOutIcon,
   SettingsIcon,
 } from "lucide-react";
