@@ -1,6 +1,7 @@
 import "dotenv/config";
 import IORedis from "ioredis";
-import { Worker, Queue, Job } from "bullmq";
+import { Worker, Job } from "bullmq";
+import { prisma } from "@aurel/db";
 import { emailExecutor } from "./executors/email";
 import { executeWorkflow } from "./engine/executor";
 
@@ -60,8 +61,36 @@ worker.on("completed", (job) => {
   console.log(`Job ${job.id} completed.`);
 });
 
-worker.on("failed", (job, err) => {
+worker.on("failed", async (job, err) => {
   console.error(`Job ${job?.id} failed with error:`, err);
+
+  if (job?.name !== "run-workflow") {
+    return;
+  }
+
+  const executionId = (job.data as { executionId?: string } | undefined)
+    ?.executionId;
+  if (!executionId) {
+    return;
+  }
+
+  try {
+    await prisma.execution.updateMany({
+      where: {
+        id: executionId,
+        status: { in: ["queued", "running"] },
+      },
+      data: {
+        status: "failed",
+        endedAt: new Date(),
+      },
+    });
+  } catch (updateError) {
+    console.error(
+      `Failed to mark execution ${executionId} as failed after job failure:`,
+      updateError,
+    );
+  }
 });
 
 console.log("Worker running...");

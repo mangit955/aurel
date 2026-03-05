@@ -32,121 +32,131 @@ export async function executeWorkflow(
     },
   });
 
+  const logs: NodeLog[] = [];
   const nodes = workflow.nodes as any[];
   const edges = workflow.edges as any[];
-  const logs: NodeLog[] = [];
 
-  // ✅ Build nodeMap — O(1) lookup, not O(n²)
-  const nodeMap = new Map(nodes.map((n) => [n.id, n]));
+  try {
+    // ✅ Build nodeMap — O(1) lookup, not O(n²)
+    const nodeMap = new Map(nodes.map((n) => [n.id, n]));
 
-  // ✅ Build adjacency list — source -> [{ targetId, sourceHandle }]
-  const adjacency = new Map<
-    string,
-    { targetId: string; sourceHandle?: string }[]
-  >();
-  edges.forEach((edge) => {
-    if (!adjacency.has(edge.source)) adjacency.set(edge.source, []);
-    adjacency.get(edge.source)!.push({
-      targetId: edge.target,
-      sourceHandle: edge.sourceHandle,
+    // ✅ Build adjacency list — source -> [{ targetId, sourceHandle }]
+    const adjacency = new Map<
+      string,
+      { targetId: string; sourceHandle?: string }[]
+    >();
+    edges.forEach((edge) => {
+      if (!adjacency.has(edge.source)) adjacency.set(edge.source, []);
+      adjacency.get(edge.source)!.push({
+        targetId: edge.target,
+        sourceHandle: edge.sourceHandle,
+      });
     });
-  });
-  console.log(
-    "All node types:",
-    nodes.map((n) => n.type),
-  );
-  // Find all root nodes (nodes with no incoming edges) to start execution
-  const targetNodeIds = new Set(edges.map((e) => e.target));
-  const startNodes = nodes.filter((n) => !targetNodeIds.has(n.id));
-
-  if (startNodes.length === 0) {
-    throw new Error(
-      "No starting nodes found in workflow (possible circular dependency with no entry point)",
+    console.log(
+      "All node types:",
+      nodes.map((n) => n.type),
     );
-  }
+    // Find all root nodes (nodes with no incoming edges) to start execution
+    const targetNodeIds = new Set(edges.map((e) => e.target));
+    const startNodes = nodes.filter((n) => !targetNodeIds.has(n.id));
 
-  // BFS execution
-  // Each queue item carries the output from its parent as input
-  let hasFailedNodes = false;
-  const queue: { nodeId: string; input: any; sourceHandle?: string }[] =
-    startNodes.map((node) => ({ nodeId: node.id, input: triggerData }));
+    if (startNodes.length === 0) {
+      throw new Error(
+        "No starting nodes found in workflow (possible circular dependency with no entry point)",
+      );
+    }
 
-  while (queue.length > 0) {
-    const { nodeId, input } = queue.shift()!;
-    const node = nodeMap.get(nodeId);
-    if (!node) continue;
+    // BFS execution
+    // Each queue item carries the output from its parent as input
+    const queue: { nodeId: string; input: any; sourceHandle?: string }[] =
+      startNodes.map((node) => ({ nodeId: node.id, input: triggerData }));
+    const maxExecutionSteps = Math.max(nodes.length * 20, 200);
+    let steps = 0;
 
-    const start = Date.now();
-
-    try {
-      const output = await executeNode(node, input);
-      const duration = Date.now() - start;
-
-      if (output && output.status === "failed") {
-        throw new Error((output as any).error || "Node execution failed");
+    while (queue.length > 0) {
+      steps += 1;
+      if (steps > maxExecutionSteps) {
+        throw new Error(
+          "Execution exceeded safe step limit. Check for circular paths in workflow.",
+        );
       }
 
-      logs.push({
-        nodeId: node.id,
-        nodeName: node.data?.label || node.type,
-        status: "success",
-        input,
-        output,
-        duration,
-      });
+      const { nodeId, input } = queue.shift()!;
+      const node = nodeMap.get(nodeId);
+      if (!node) continue;
 
-      // Queue next nodes — pass this node's output as their input
-      const nextNodes = adjacency.get(nodeId) || [];
-      nextNodes.forEach(({ targetId, sourceHandle }) => {
-        if (node.type === "ifNode" || node.type === "ifFilter") {
-          // IF node does not transform data — just chooses branch.
-          // Pass original input forward unchanged.
-          if (sourceHandle === (output as any).data?.branch) {
-            queue.push({ nodeId: targetId, input });
-          }
-        } else {
-          // For normal nodes, pass ONLY business data forward (not metadata like status/httpStatus)
-          const nextInput = output?.data !== undefined ? output.data : output;
-          queue.push({ nodeId: targetId, input: nextInput });
+      const start = Date.now();
+
+      try {
+        const output = await executeNode(node, input);
+        const duration = Date.now() - start;
+
+        if (output && output.status === "failed") {
+          throw new Error((output as any).error || "Node execution failed");
         }
-      });
-    } catch (err: any) {
-      logs.push({
-        nodeId: node.id,
-        nodeName: node.data?.label || node.type,
-        status: "failed",
-        input,
-        error: err.message,
-        duration: Date.now() - start,
-      });
 
-      // Immediately mark execution as failed and STOP entire workflow
-      await prisma.execution.update({
-        where: { id: executionId },
-        data: {
+        logs.push({
+          nodeId: node.id,
+          nodeName: node.data?.label || node.type,
+          status: "success",
+          input,
+          output,
+          duration,
+        });
+
+        // Queue next nodes — pass this node's output as their input
+        const nextNodes = adjacency.get(nodeId) || [];
+        nextNodes.forEach(({ targetId, sourceHandle }) => {
+          if (node.type === "ifNode" || node.type === "ifFilter") {
+            // IF node does not transform data — just chooses branch.
+            // Pass original input forward unchanged.
+            if (sourceHandle === (output as any).data?.branch) {
+              queue.push({ nodeId: targetId, input });
+            }
+          } else {
+            // For normal nodes, pass ONLY business data forward (not metadata like status/httpStatus)
+            const nextInput = output?.data !== undefined ? output.data : output;
+            queue.push({ nodeId: targetId, input: nextInput });
+          }
+        });
+      } catch (err: any) {
+        logs.push({
+          nodeId: node.id,
+          nodeName: node.data?.label || node.type,
           status: "failed",
-          logs: logs as any,
-          endedAt: new Date(),
-        },
-      });
+          input,
+          error: err.message,
+          duration: Date.now() - start,
+        });
 
-      console.error(
-        "Workflow stopped due to node failure:",
-        node.id,
-        err.message,
-      );
+        console.error(
+          "Workflow stopped due to node failure:",
+          node.id,
+          err.message,
+        );
 
-      throw new Error(err.message); // STOP execution completely
+        throw new Error(err.message); // STOP execution completely
+      }
     }
-  }
 
-  // Update DB execution status as success (if we reached here, no failure occurred)
-  await prisma.execution.update({
-    where: { id: executionId },
-    data: {
-      status: "success",
-      logs: logs as any,
-      endedAt: new Date(),
-    },
-  });
+    // Update DB execution status as success (if we reached here, no failure occurred)
+    await prisma.execution.update({
+      where: { id: executionId },
+      data: {
+        status: "success",
+        logs: logs as any,
+        endedAt: new Date(),
+      },
+    });
+  } catch (err: any) {
+    await prisma.execution.update({
+      where: { id: executionId },
+      data: {
+        status: "failed",
+        logs: logs as any,
+        endedAt: new Date(),
+      },
+    });
+    throw err;
+  }
 }
