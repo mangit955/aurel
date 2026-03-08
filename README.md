@@ -41,6 +41,7 @@
 **Aurel** is a no-code/low-code workflow automation platform. Users can visually design multi-step workflows using a drag-and-drop canvas (powered by React Flow), wire up nodes, and trigger them via webhooks. Workflows execute asynchronously through a BullMQ job queue backed by Redis, with full per-node execution logs stored in PostgreSQL.
 
 **Key capabilities:**
+
 - 🖱️ Visual drag-and-drop workflow editor
 - 🔗 Webhook triggers per workflow (unique secret per workflow)
 - 📧 Send emails via **Resend**
@@ -49,7 +50,6 @@
 - 📝 Set and transform data between nodes
 - 📊 Full execution logs with per-node status tracking
 - 🔐 OAuth authentication (GitHub & Google) via NextAuth v5
-- 🌙 Dark mode support
 
 ---
 
@@ -100,24 +100,24 @@
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend Framework | Next.js 16 (App Router) |
-| UI Library | React 19 + shadcn/ui + Radix UI |
-| Styling | Tailwind CSS v4 |
-| Animations | Framer Motion, GSAP, motion |
-| 3D / Effects | Three.js, React Three Fiber, OGL |
-| Workflow Canvas | React Flow (`@xyflow/react`) |
-| State Management | Zustand |
-| Data Fetching | SWR |
-| Authentication | NextAuth v5 (GitHub + Google OAuth) |
-| Job Queue | BullMQ + IORedis |
-| Database ORM | Prisma |
-| Database | PostgreSQL |
-| Email | Resend |
-| HTTP Client | Axios |
-| Package Manager | pnpm (Workspaces) |
-| Language | TypeScript 5 |
+| Layer              | Technology                          |
+| ------------------ | ----------------------------------- |
+| Frontend Framework | Next.js 16 (App Router)             |
+| UI Library         | React 19 + shadcn/ui + Radix UI     |
+| Styling            | Tailwind CSS v4                     |
+| Animations         | Framer Motion, GSAP, motion         |
+| 3D / Effects       | Three.js, React Three Fiber, OGL    |
+| Workflow Canvas    | React Flow (`@xyflow/react`)        |
+| State Management   | Zustand                             |
+| Data Fetching      | SWR                                 |
+| Authentication     | NextAuth v5 (GitHub + Google OAuth) |
+| Job Queue          | BullMQ + IORedis                    |
+| Database ORM       | Prisma                              |
+| Database           | PostgreSQL                          |
+| Email              | Resend                              |
+| HTTP Client        | Axios                               |
+| Package Manager    | pnpm (Workspaces)                   |
+| Language           | TypeScript 5                        |
 
 ---
 
@@ -125,13 +125,13 @@
 
 Each node in a workflow has a **type** and configurable **data**. The worker resolves them at execution time.
 
-| Node Type | Description |
-|---|---|
-| `trigger` / `webhook` | Entry point of a workflow. Workflows expose a unique `POST /api/webhooks/:id` endpoint that queues a job with the request body as `triggerData`. |
-| `email` | Sends an HTML email via the Resend API. Supports template interpolation from previous node outputs (`{{field.path}}`). |
-| `http` | Makes an arbitrary HTTP request (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`) and passes the response body to the next node. |
-| `if` | Conditional branching. Evaluates a field on the current data payload against a value using operators: `=`, `contains`, `>`, `<`, `exists`. Routes to `true` or `false` branches. |
-| `set` | Sets or transforms data fields on the payload before passing it to the next node. |
+| Node Type             | Description                                                                                                                                                                      |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `trigger` / `webhook` | Entry point of a workflow. Workflows expose a unique `POST /api/webhooks/:id` endpoint that queues a job with the request body as `triggerData`.                                 |
+| `email`               | Sends an HTML email via the Resend API. Supports template interpolation from previous node outputs (`{{field.path}}`).                                                           |
+| `http`                | Makes an arbitrary HTTP request (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`) and passes the response body to the next node.                                                         |
+| `if`                  | Conditional branching. Evaluates a field on the current data payload against a value using operators: `=`, `contains`, `>`, `<`, `exists`. Routes to `true` or `false` branches. |
+| `set`                 | Sets or transforms data fields on the payload before passing it to the next node.                                                                                                |
 
 ---
 
@@ -249,30 +249,30 @@ pnpm dev:worker
 
 ### `apps/web` — Web App
 
-| Variable | Description |
-|---|---|
-| `DATABASE_URL` | PostgreSQL connection string |
-| `REDIS_URL` | Redis connection string (e.g. `redis://localhost:6379`) |
-| `REDIS_HOST` | Redis host (alternative to `REDIS_URL`) |
-| `REDIS_PORT` | Redis port (default: `6379`) |
-| `REDIS_PASSWORD` | Redis password (optional) |
-| `NEXTAUTH_SECRET` | Secret for signing NextAuth session tokens |
-| `NEXTAUTH_URL` | Canonical URL of the app (e.g. `http://localhost:3000`) |
-| `GITHUB_ID` | GitHub OAuth App Client ID |
-| `GITHUB_SECRET` | GitHub OAuth App Client Secret |
-| `GOOGLE_CLIENT_ID` | Google OAuth 2.0 Client ID |
-| `GOOGLE_CLIENT_SECRET` | Google OAuth 2.0 Client Secret |
+| Variable               | Description                                             |
+| ---------------------- | ------------------------------------------------------- |
+| `DATABASE_URL`         | PostgreSQL connection string                            |
+| `REDIS_URL`            | Redis connection string (e.g. `redis://localhost:6379`) |
+| `REDIS_HOST`           | Redis host (alternative to `REDIS_URL`)                 |
+| `REDIS_PORT`           | Redis port (default: `6379`)                            |
+| `REDIS_PASSWORD`       | Redis password (optional)                               |
+| `NEXTAUTH_SECRET`      | Secret for signing NextAuth session tokens              |
+| `NEXTAUTH_URL`         | Canonical URL of the app (e.g. `http://localhost:3000`) |
+| `GITHUB_ID`            | GitHub OAuth App Client ID                              |
+| `GITHUB_SECRET`        | GitHub OAuth App Client Secret                          |
+| `GOOGLE_CLIENT_ID`     | Google OAuth 2.0 Client ID                              |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth 2.0 Client Secret                          |
 
 ### `apps/worker` — Background Worker
 
-| Variable | Description |
-|---|---|
-| `DATABASE_URL` | PostgreSQL connection string |
-| `REDIS_URL` | Redis connection string |
-| `REDIS_HOST` | Redis host (alternative to `REDIS_URL`) |
-| `REDIS_PORT` | Redis port |
-| `REDIS_PASSWORD` | Redis password (optional) |
-| `RESEND_API_KEY` | Resend API key for sending emails |
+| Variable            | Description                                            |
+| ------------------- | ------------------------------------------------------ |
+| `DATABASE_URL`      | PostgreSQL connection string                           |
+| `REDIS_URL`         | Redis connection string                                |
+| `REDIS_HOST`        | Redis host (alternative to `REDIS_URL`)                |
+| `REDIS_PORT`        | Redis port                                             |
+| `REDIS_PASSWORD`    | Redis password (optional)                              |
+| `RESEND_API_KEY`    | Resend API key for sending emails                      |
 | `RESEND_FROM_EMAIL` | Default sender address (e.g. `noreply@yourdomain.com`) |
 
 ---
@@ -308,23 +308,23 @@ Deploy **two separate services** from this monorepo on [Render](https://render.c
 
 ### Service 1 — Web App
 
-| Setting | Value |
-|---|---|
-| Type | `Web Service` |
-| Root Directory | _(repo root)_ |
-| Build Command | `pnpm install --frozen-lockfile && pnpm run db:generate && pnpm --filter web build` |
-| Start Command | `pnpm --filter web start` |
-| Environment Variables | See [Web App env vars](#appswebweb-app) |
+| Setting               | Value                                                                               |
+| --------------------- | ----------------------------------------------------------------------------------- |
+| Type                  | `Web Service`                                                                       |
+| Root Directory        | _(repo root)_                                                                       |
+| Build Command         | `pnpm install --frozen-lockfile && pnpm run db:generate && pnpm --filter web build` |
+| Start Command         | `pnpm --filter web start`                                                           |
+| Environment Variables | See [Web App env vars](#appswebweb-app)                                             |
 
 ### Service 2 — Background Worker
 
-| Setting | Value |
-|---|---|
-| Type | `Background Worker` |
-| Root Directory | _(repo root)_ |
-| Build Command | `pnpm install --frozen-lockfile && pnpm run db:generate` |
-| Start Command | `pnpm --filter worker start` |
-| Environment Variables | See [Worker env vars](#appsworkerbackground-worker) |
+| Setting               | Value                                                    |
+| --------------------- | -------------------------------------------------------- |
+| Type                  | `Background Worker`                                      |
+| Root Directory        | _(repo root)_                                            |
+| Build Command         | `pnpm install --frozen-lockfile && pnpm run db:generate` |
+| Start Command         | `pnpm --filter worker start`                             |
+| Environment Variables | See [Worker env vars](#appsworkerbackground-worker)      |
 
 ### Pre-deploy: Run Migrations
 

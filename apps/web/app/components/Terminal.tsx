@@ -151,7 +151,13 @@ export default function Terminal({
             type="button"
             onClick={() => void handleCreateWorkflow()}
             disabled={isCreating}
-            className="flex cursor-pointer text-zinc-400 hover:text-zinc-300 h-10 w-10 items-center justify-center rounded-lg border border-zinc-700/60 bg-zinc-800/80 transition hover:bg-zinc-700/80 disabled:cursor-not-allowed disabled:opacity-60"
+            onFocus={() => setIsTerminalFocused(true)}
+            onBlur={() => setIsTerminalFocused(false)}
+            className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border transition disabled:cursor-not-allowed disabled:opacity-60 ${
+              isTerminalFocused
+                ? "border-zinc-900 bg-zinc-600 text-zinc-800 hover:bg-zinc-400 hover:border-zinc-400 hover:text-black"
+                : "border-zinc-700/60 bg-zinc-800/80 text-zinc-400 hover:bg-zinc-700/80 hover:text-zinc-300"
+            }`}
           >
             <span>{isCreating ? "…" : "→"}</span>
           </button>
