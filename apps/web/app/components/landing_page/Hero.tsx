@@ -151,7 +151,7 @@ export default function HeroBackground() {
       </div>
 
       {/* Glassmorphism Navbar */}
-      <div className="absolute top-6 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
+      <div className="absolute top-6 left-1/2 z-10 hidden -translate-x-1/2 pointer-events-none md:block">
         <div
           ref={navRef}
           onMouseLeave={handleNavLeave}
