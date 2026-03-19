@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "../../auth/[...nextauth]/route";
+import {
+  getActiveOrganizationContext,
+  hasRequiredRole,
+} from "@/lib/organizations";
 
 type WorkflowRecord = {
   id: string;
   name: string;
-  userId: string;
+  organizationId: string;
   nodes: unknown[];
   edges: unknown[];
 };
@@ -32,51 +35,49 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const session = await auth();
-  const userEmail = session?.user?.email;
-  if (!userEmail) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  try {
+    const context = await getActiveOrganizationContext();
+    const prisma = await getPrisma();
+    if (!prisma) {
+      const { id } = await params;
+      const workflow = (
+        workflowFallbackStore[context.activeOrganization.id] ?? []
+      ).find((item) => item.id === id);
+      if (!workflow) {
+        return NextResponse.json({ error: "Not found" }, { status: 404 });
+      }
+      return NextResponse.json(workflow);
+    }
 
-  const prisma = await getPrisma();
-  if (!prisma) {
     const { id } = await params;
-    const workflow = (workflowFallbackStore[userEmail] ?? []).find(
-      (item) => item.id === id,
-    );
+    const workflow = await prisma.workflow.findFirst({
+      where: {
+        id,
+        organizationId: context.activeOrganization.id,
+      },
+    });
+
     if (!workflow) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
+
     return NextResponse.json(workflow);
+  } catch {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-
-  const { id } = await params;
-  const workflow = await prisma.workflow.findFirst({
-    where: {
-      id,
-      user: { email: userEmail },
-    },
-  });
-
-  if (!workflow) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-
-  return NextResponse.json(workflow);
 }
 
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const session = await auth();
-  const userEmail = session?.user?.email;
-  if (!userEmail) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  try {
+    const context = await getActiveOrganizationContext();
+    if (!hasRequiredRole(context.activeOrganization.role, "MEMBER")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
-  const prisma = await getPrisma();
-  if (!prisma) {
+    const prisma = await getPrisma();
     const body = (await req.json()) as {
       nodes?: unknown[];
       edges?: unknown[];
@@ -85,123 +86,115 @@ export async function PATCH(
     const edges = Array.isArray(body.edges) ? body.edges : [];
     const { id } = await params;
 
-    const list = workflowFallbackStore[userEmail] ?? [];
-    const existingIndex = list.findIndex((item) => item.id === id);
-    if (existingIndex >= 0) {
-      const updated = {
-        ...list[existingIndex],
+    if (!prisma) {
+      const list = workflowFallbackStore[context.activeOrganization.id] ?? [];
+      const existingIndex = list.findIndex((item) => item.id === id);
+      if (existingIndex >= 0) {
+        const updated = {
+          ...list[existingIndex],
+          nodes,
+          edges,
+        };
+        const next = [...list];
+        next[existingIndex] = updated;
+        workflowFallbackStore[context.activeOrganization.id] = next;
+        return NextResponse.json(updated);
+      }
+
+      const created: WorkflowRecord = {
+        id,
+        name: "Untitled Workflow",
+        organizationId: context.activeOrganization.id,
         nodes,
         edges,
       };
-      const next = [...list];
-      next[existingIndex] = updated;
-      workflowFallbackStore[userEmail] = next;
+      workflowFallbackStore[context.activeOrganization.id] = [...list, created];
+      return NextResponse.json(created);
+    }
+
+    const existingById = await prisma.workflow.findFirst({
+      where: {
+        id,
+        organizationId: context.activeOrganization.id,
+      },
+    });
+
+    if (existingById) {
+      const updated = await prisma.workflow.update({
+        where: { id },
+        data: {
+          nodes: nodes as never,
+          edges: edges as never,
+        },
+      });
       return NextResponse.json(updated);
     }
 
-    const created: WorkflowRecord = {
-      id,
-      name: "Untitled Workflow",
-      userId: userEmail,
-      nodes,
-      edges,
-    };
-    workflowFallbackStore[userEmail] = [...list, created];
-    return NextResponse.json(created);
-  }
-
-  const { id } = await params;
-  const existingById = await prisma.workflow.findUnique({
-    where: { id },
-    include: { user: { select: { email: true } } },
-  });
-
-  if (existingById && existingById.user.email !== userEmail) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-  const body = (await req.json()) as {
-    nodes?: unknown[];
-    edges?: unknown[];
-  };
-  const nodes = Array.isArray(body.nodes) ? body.nodes : [];
-  const edges = Array.isArray(body.edges) ? body.edges : [];
-
-  if (existingById) {
-    const updated = await prisma.workflow.update({
-      where: { id },
+    const created = await prisma.workflow.create({
       data: {
-        nodes: nodes as any,
-        edges: edges as any,
+        id,
+        name: "Untitled Workflow",
+        organizationId: context.activeOrganization.id,
+        createdByUserId: context.user.id,
+        nodes: nodes as never,
+        edges: edges as never,
       },
     });
-    return NextResponse.json(updated);
+
+    return NextResponse.json(created);
+  } catch {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-
-  const created = await prisma.workflow.create({
-    data: {
-      id,
-      name: "Untitled Workflow",
-      nodes: nodes as any,
-      edges: edges as any,
-      user: {
-        connectOrCreate: {
-          where: { email: userEmail },
-          create: {
-            email: userEmail,
-            name: session.user?.name ?? null,
-            image: session.user?.image ?? null,
-          },
-        },
-      },
-    },
-  });
-
-  return NextResponse.json(created);
 }
 
 export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const session = await auth();
-  const userEmail = session?.user?.email;
-  if (!userEmail) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  try {
+    const context = await getActiveOrganizationContext();
+    if (!hasRequiredRole(context.activeOrganization.role, "MEMBER")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
-  const { id } = await params;
-  const prisma = await getPrisma();
+    const { id } = await params;
+    const prisma = await getPrisma();
 
-  if (!prisma) {
-    const list = workflowFallbackStore[userEmail] ?? [];
-    const exists = list.some((item) => item.id === id);
-    if (!exists) {
+    if (!prisma) {
+      const list = workflowFallbackStore[context.activeOrganization.id] ?? [];
+      const exists = list.some((item) => item.id === id);
+      if (!exists) {
+        return NextResponse.json({ error: "Not found" }, { status: 404 });
+      }
+
+      workflowFallbackStore[context.activeOrganization.id] = list.filter(
+        (item) => item.id !== id,
+      );
+      return NextResponse.json({ ok: true });
+    }
+
+    const workflow = await prisma.workflow.findFirst({
+      where: {
+        id,
+        organizationId: context.activeOrganization.id,
+      },
+      select: { id: true },
+    });
+
+    if (!workflow) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    workflowFallbackStore[userEmail] = list.filter((item) => item.id !== id);
-    return NextResponse.json({ ok: true });
-  }
-
-  const workflow = await prisma.workflow.findFirst({
-    where: {
-      id,
-      user: { email: userEmail },
-    },
-    select: { id: true },
-  });
-
-  if (!workflow) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-
-  try {
     await prisma.$transaction([
       prisma.execution.deleteMany({ where: { workflowId: id } }),
       prisma.workflow.delete({ where: { id } }),
     ]);
     return NextResponse.json({ ok: true });
   } catch (error) {
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     console.error("Failed to delete workflow:", error);
     return NextResponse.json(
       { error: "Failed to delete workflow" },

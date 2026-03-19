@@ -55,46 +55,9 @@
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                        apps/web                         │
-│  Next.js 16 App Router                                  │
-│  ┌─────────────────────┐   ┌───────────────────────┐   │
-│  │  Workflow Editor     │   │  API Routes           │   │
-│  │  (React Flow canvas) │   │  /api/workflows       │   │
-│  │                      │   │  /api/executions      │   │
-│  │  Zustand store       │   │  /api/webhooks        │   │
-│  │  SWR data fetching   │   │  /api/emails/send     │   │
-│  └─────────────────────┘   └──────────┬────────────┘   │
-└──────────────────────────────────────-│─────────────────┘
-                                        │ Enqueues jobs
-                                        ▼
-                              ┌─────────────────┐
-                              │      Redis       │
-                              │  (BullMQ Queue)  │
-                              └────────┬─────────┘
-                                       │ Dequeues jobs
-                                       ▼
-                        ┌──────────────────────────────┐
-                        │         apps/worker           │
-                        │  BullMQ Worker (concurrency=5)│
-                        │  ┌───────────────────────┐   │
-                        │  │  Workflow Engine       │   │
-                        │  │  executeWorkflow()     │   │
-                        │  │                        │   │
-                        │  │  Executors:            │   │
-                        │  │  • email   • http      │   │
-                        │  │  • if      • set       │   │
-                        │  │  • webhook             │   │
-                        │  └───────────────────────┘   │
-                        └──────────────────────────────┘
-                                       │ Read/Write
-                                       ▼
-                              ┌─────────────────┐
-                              │   PostgreSQL     │
-                              │  (via Prisma)    │
-                              └─────────────────┘
-```
+![Aurel architecture diagram showing the Next.js web app, Redis queue, worker, and PostgreSQL database.](docs/architecture.png)
+
+Web requests enter through `apps/web`, jobs flow through Redis/BullMQ, and `apps/worker` executes workflows while persisting state in PostgreSQL via Prisma.
 
 ---
 

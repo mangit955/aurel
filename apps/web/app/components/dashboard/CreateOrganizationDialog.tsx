@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus } from "lucide-react";
+import { Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -15,51 +15,49 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-export function CreateWorkflowDialog({ disabled = false }: { disabled?: boolean }) {
+export function CreateOrganizationDialog() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     setError(null);
 
-    const trimmed = name.trim();
-    if (!trimmed) {
-      setError("Workflow name is required");
+    const trimmedName = name.trim();
+    if (!trimmedName) {
+      setError("Workspace name is required");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const response = await fetch("/api/workflows", {
+      const response = await fetch("/api/organizations", {
         method: "POST",
-        body: JSON.stringify({ name: trimmed }),
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: trimmedName }),
       });
 
-      if (!response.ok) {
-        const payload = (await response.json().catch(() => null)) as {
-          error?: string;
-        } | null;
-        setError(payload?.error ?? "Failed to create workflow");
+      const payload = (await response.json().catch(() => null)) as
+        | { id?: string; error?: string }
+        | null;
+
+      if (!response.ok || !payload?.id) {
+        setError(payload?.error ?? "Failed to create workspace");
         return;
       }
 
-      const payload = (await response.json().catch(() => null)) as
-        | { id?: string }
-        | null;
-      const workflowId = payload?.id;
+      await fetch("/api/organizations/active", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ organizationId: payload.id }),
+      });
 
       setName("");
       setOpen(false);
-      if (!workflowId) {
-        router.refresh();
-        return;
-      }
-      router.push(`/editor/${workflowId}`);
+      router.refresh();
     } finally {
       setIsSubmitting(false);
     }
@@ -68,32 +66,29 @@ export function CreateWorkflowDialog({ disabled = false }: { disabled?: boolean 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button
-          disabled={disabled}
-          className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-md bg-zinc-100 px-3 text-sm font-semibold text-zinc-900 transition hover:bg-zinc-300 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <Plus size={16} />
-          New Workflow
+        <button className="inline-flex h-8 cursor-pointer items-center gap-2 rounded-md border border-zinc-700 bg-zinc-900 px-3 text-sm font-medium text-zinc-100 transition hover:border-zinc-500 hover:bg-zinc-800">
+          <Building2 size={15} />
+          New Workspace
         </button>
       </DialogTrigger>
       <DialogContent className="border-zinc-800 bg-zinc-900 text-zinc-100">
         <DialogHeader>
-          <DialogTitle>Create workflow</DialogTitle>
+          <DialogTitle>Create workspace</DialogTitle>
           <DialogDescription>
-            Give your workflow a name to add it to your dashboard.
+            Create a separate organization for workflows, teammates, and invites.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <label htmlFor="workflow-name" className="text-sm text-zinc-300">
-              Name
+            <label htmlFor="organization-name" className="text-sm text-zinc-300">
+              Workspace name
             </label>
             <Input
-              id="workflow-name"
+              id="organization-name"
               value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Order Intake"
+              onChange={(event) => setName(event.target.value)}
+              placeholder="e.g. Acme Operations"
               className="border-zinc-700 bg-zinc-950 text-zinc-100 placeholder:text-zinc-500"
               autoFocus
             />
@@ -110,11 +105,7 @@ export function CreateWorkflowDialog({ disabled = false }: { disabled?: boolean 
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="cursor-pointer"
-            >
+            <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Creating..." : "Create"}
             </Button>
           </DialogFooter>

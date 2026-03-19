@@ -37,10 +37,10 @@ export async function executeWorkflow(
   const edges = workflow.edges as any[];
 
   try {
-    // ✅ Build nodeMap — O(1) lookup, not O(n²)
+    //  Build nodeMap — O(1) lookup, not O(n²)
     const nodeMap = new Map(nodes.map((n) => [n.id, n]));
 
-    // ✅ Build adjacency list — source -> [{ targetId, sourceHandle }]
+    // Build adjacency list — source -> [{ targetId, sourceHandle }]
     const adjacency = new Map<
       string,
       { targetId: string; sourceHandle?: string }[]
@@ -67,7 +67,6 @@ export async function executeWorkflow(
     }
 
     // BFS execution
-    // Each queue item carries the output from its parent as input
     const queue: { nodeId: string; input: any; sourceHandle?: string }[] =
       startNodes.map((node) => ({ nodeId: node.id, input: triggerData }));
     const maxExecutionSteps = Math.max(nodes.length * 20, 200);
@@ -108,13 +107,12 @@ export async function executeWorkflow(
         const nextNodes = adjacency.get(nodeId) || [];
         nextNodes.forEach(({ targetId, sourceHandle }) => {
           if (node.type === "ifNode" || node.type === "ifFilter") {
-            // IF node does not transform data — just chooses branch.
-            // Pass original input forward unchanged.
+        
             if (sourceHandle === (output as any).data?.branch) {
               queue.push({ nodeId: targetId, input });
             }
           } else {
-            // For normal nodes, pass ONLY business data forward (not metadata like status/httpStatus)
+
             const nextInput = output?.data !== undefined ? output.data : output;
             queue.push({ nodeId: targetId, input: nextInput });
           }
@@ -135,11 +133,11 @@ export async function executeWorkflow(
           err.message,
         );
 
-        throw new Error(err.message); // STOP execution completely
+        throw new Error(err.message);
       }
     }
 
-    // Update DB execution status as success (if we reached here, no failure occurred)
+
     await prisma.execution.update({
       where: { id: executionId },
       data: {

@@ -12,7 +12,7 @@ export async function POST(
     where: { id: workflowId },
   });
 
-  // Reject if not found or secret mismatch
+
   if (!workflow || workflow.webhookSecret !== secret) {
     return NextResponse.json(
       { error: "Unauthorized or workflow not found" },

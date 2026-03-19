@@ -3,7 +3,7 @@ import { AxiosRequestConfig } from "axios";
 
 export async function httpExecutor(node: any, input: any) {
   const url = node.data?.url;
-  const method = node.data?.method || "GET"; // ✅ default
+  const method = node.data?.method || "GET"; 
   const headers = node.data?.headers;
   const body = node.data?.body;
 
@@ -37,6 +37,6 @@ export async function httpExecutor(node: any, input: any) {
       },
     };
   } catch (error: any) {
-    throw new Error(error.message); // ✅ always throw
+    throw new Error(error.message); 
   }
 }

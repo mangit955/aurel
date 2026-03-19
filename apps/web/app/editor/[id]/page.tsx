@@ -1,7 +1,7 @@
 import type { Edge, Node } from "@xyflow/react";
 import { redirect } from "next/navigation";
-import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { EditorClient } from "./EditorClient";
+import { getActiveOrganizationContext } from "@/lib/organizations";
 
 type EditorPageProps = {
   params: Promise<{ id: string }>;
@@ -18,11 +18,13 @@ async function getPrisma() {
 }
 
 export default async function EditorPage({ params }: EditorPageProps) {
-  const session = await auth();
-  const userEmail = session?.user?.email;
   const { id } = await params;
 
-  if (!userEmail) {
+  let organizationId: string;
+  try {
+    const context = await getActiveOrganizationContext();
+    organizationId = context.activeOrganization.id;
+  } catch {
     redirect("/");
   }
 
@@ -41,7 +43,7 @@ export default async function EditorPage({ params }: EditorPageProps) {
   const workflow = await prisma.workflow.findFirst({
     where: {
       id,
-      user: { email: userEmail },
+      organizationId,
     },
   });
 

@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "../auth/[...nextauth]/route";
+import {
+  getActiveOrganizationContext,
+  hasRequiredRole,
+} from "@/lib/organizations";
 
 type WorkflowRecord = {
   id: string;
   name: string;
-  userId: string;
+  organizationId: string;
   nodes: unknown[];
   edges: unknown[];
 };
@@ -29,73 +32,70 @@ async function getPrisma() {
 }
 
 export async function GET() {
-  const session = await auth();
-  const userEmail = session?.user?.email;
-  if (!userEmail) {
+  try {
+    const context = await getActiveOrganizationContext();
+    const prisma = await getPrisma();
+    if (!prisma) {
+      return NextResponse.json(
+        workflowFallbackStore[context.activeOrganization.id] ?? [],
+      );
+    }
+
+    const workflows = await prisma.workflow.findMany({
+      where: { organizationId: context.activeOrganization.id },
+      orderBy: { updatedAt: "desc" },
+    });
+
+    return NextResponse.json(workflows);
+  } catch {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-
-  const prisma = await getPrisma();
-  if (!prisma) {
-    return NextResponse.json(workflowFallbackStore[userEmail] ?? []);
-  }
-
-  const workflows = await prisma.workflow.findMany({
-    where: { user: { email: userEmail } },
-  });
-
-  return NextResponse.json(workflows);
 }
 
 export async function POST(req: NextRequest) {
-  const session = await auth();
-  const userEmail = session?.user?.email;
-  if (!userEmail) {
+  try {
+    const context = await getActiveOrganizationContext();
+    if (!hasRequiredRole(context.activeOrganization.role, "MEMBER")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const body: { name?: string } = await req.json();
+    const trimmedName = body.name?.trim();
+    if (!trimmedName) {
+      return NextResponse.json(
+        { error: "Workflow name is required" },
+        { status: 400 },
+      );
+    }
+
+    const prisma = await getPrisma();
+    if (!prisma) {
+      const fallbackWorkflow: WorkflowRecord = {
+        id: `local_${Date.now()}`,
+        name: trimmedName,
+        organizationId: context.activeOrganization.id,
+        nodes: [],
+        edges: [],
+      };
+      workflowFallbackStore[context.activeOrganization.id] = [
+        ...(workflowFallbackStore[context.activeOrganization.id] ?? []),
+        fallbackWorkflow,
+      ];
+      return NextResponse.json(fallbackWorkflow);
+    }
+
+    const workflow = await prisma.workflow.create({
+      data: {
+        name: trimmedName,
+        organizationId: context.activeOrganization.id,
+        createdByUserId: context.user.id,
+        nodes: [],
+        edges: [],
+      },
+    });
+
+    return NextResponse.json(workflow);
+  } catch {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-
-  const body: { name?: string } = await req.json();
-  const trimmedName = body.name?.trim();
-  if (!trimmedName) {
-    return NextResponse.json(
-      { error: "Workflow name is required" },
-      { status: 400 },
-    );
-  }
-
-  const prisma = await getPrisma();
-  if (!prisma) {
-    const fallbackWorkflow: WorkflowRecord = {
-      id: `local_${Date.now()}`,
-      name: trimmedName,
-      userId: userEmail,
-      nodes: [],
-      edges: [],
-    };
-    workflowFallbackStore[userEmail] = [
-      ...(workflowFallbackStore[userEmail] ?? []),
-      fallbackWorkflow,
-    ];
-    return NextResponse.json(fallbackWorkflow);
-  }
-
-  const workflow = await prisma.workflow.create({
-    data: {
-      name: trimmedName,
-      user: {
-        connectOrCreate: {
-          where: { email: userEmail },
-          create: {
-            email: userEmail,
-            name: session.user?.name ?? null,
-            image: session.user?.image ?? null,
-          },
-        },
-      },
-      nodes: [],
-      edges: [],
-    },
-  });
-
-  return NextResponse.json(workflow);
 }

@@ -14,19 +14,62 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(cuid())
-  email     String     @unique
-  name      String?
-  image     String?
-  workflows Workflow[]
-  createdAt DateTime   @default(now())
+  id               String       @id @default(cuid())
+  email            String       @unique
+  name             String?
+  image            String?
+  memberships      Membership[]
+  workflowsCreated Workflow[]   @relation("WorkflowCreatedBy")
+  invitesSent      Invite[]     @relation("InviteSentBy")
+  createdAt        DateTime     @default(now())
+}
+
+model Organization {
+  id          String       @id @default(cuid())
+  name        String
+  slug        String       @unique
+  memberships Membership[]
+  workflows   Workflow[]
+  invites     Invite[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Membership {
+  id             String           @id @default(cuid())
+  organizationId String
+  userId         String
+  role           OrganizationRole
+  organization   Organization     @relation(fields: [organizationId], references: [id])
+  user           User             @relation(fields: [userId], references: [id])
+  createdAt      DateTime         @default(now())
+
+  @@unique([organizationId, userId])
+}
+
+model Invite {
+  id              String           @id @default(cuid())
+  organizationId  String
+  email           String
+  role            OrganizationRole
+  token           String           @unique
+  expiresAt       DateTime
+  acceptedAt      DateTime?
+  invitedByUserId String?
+  organization    Organization     @relation(fields: [organizationId], references: [id])
+  invitedByUser   User?            @relation("InviteSentBy", fields: [invitedByUserId], references: [id])
+  createdAt       DateTime         @default(now())
+
+  @@index([organizationId, email])
 }
 
 model Workflow {
   id            String      @id @default(cuid())
   name          String
-  userId        String
-  user          User        @relation(fields: [userId], references: [id])
+  organizationId String
+  createdByUserId String?
+  organization  Organization @relation(fields: [organizationId], references: [id])
+  createdByUser User?       @relation("WorkflowCreatedBy", fields: [createdByUserId], references: [id])
   nodes         Json // React Flow nodes array
   edges         Json // React Flow edges array
   active        Boolean     @default(false)
@@ -45,4 +88,11 @@ model Execution {
   logs       Json // per-node results array
   startedAt  DateTime  @default(now())
   endedAt    DateTime?
+}
+
+enum OrganizationRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
 }

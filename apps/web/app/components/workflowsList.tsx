@@ -19,7 +19,7 @@ const fetcher = async (url: string): Promise<Workflow[]> => {
   return res.json() as Promise<Workflow[]>;
 };
 
-export function WorkflowsList() {
+export function WorkflowsList({ canEdit = true }: { canEdit?: boolean }) {
   const [search, setSearch] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const { data, error, isLoading, mutate } = useSWR("/api/workflows", fetcher);
@@ -174,14 +174,16 @@ export function WorkflowsList() {
                   </p>
                 </Link>
                 <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => void deleteWorkflow(workflow)}
-                    disabled={isDeleting}
-                    className="inline-flex h-8 items-center gap-1 rounded-md border border-zinc-700 bg-zinc-900 px-2 text-xs font-medium text-zinc-300 transition hover:border-red-500/60 hover:bg-red-500/10 hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    <Trash2 fill="white" size={13} />
-                  </button>
+                  {canEdit ? (
+                    <button
+                      type="button"
+                      onClick={() => void deleteWorkflow(workflow)}
+                      disabled={isDeleting}
+                      className="inline-flex h-8 items-center gap-1 rounded-md border border-zinc-700 bg-zinc-900 px-2 text-xs font-medium text-zinc-300 transition hover:border-red-500/60 hover:bg-red-500/10 hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      <Trash2 fill="white" size={13} />
+                    </button>
+                  ) : null}
                   <Link
                     href={`/editor/${workflow.id}`}
                     className="inline-flex h-8 w-8 items-center justify-center text-zinc-300 transition hover:border-zinc-500 hover:bg-zinc-800 hover:text-zinc-100"

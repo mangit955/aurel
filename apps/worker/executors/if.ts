@@ -1,8 +1,6 @@
 export async function ifExecutor(node: any, input: any) {
   const { field, operator, value } = node.data;
 
-  // Workflows commonly pass `{ status: 'success', data: { ... } }` between nodes.
-  // We need to unwrap it if it exists to get the real payload.
   const payload = input?.data !== undefined ? input.data : input;
 
   let actual = payload;
@@ -42,8 +40,7 @@ export async function ifExecutor(node: any, input: any) {
       break;
 
     default:
-      // If we don't know the operator, assume default condition depending on what makes sense,
-      // here we fallback to equals to avoid unhandled errors blocking the run completely.
+      
       pass = String(actual) === String(value);
   }
 
