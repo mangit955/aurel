@@ -9,7 +9,6 @@ import {
   MiniMap,
   ReactFlow,
 } from "@xyflow/react";
-import "@xyflow/react/dist/style.css";
 import { X } from "lucide-react";
 import ExecutionNode from "./execution/ExecutionNode";
 

@@ -5,8 +5,6 @@ import { prisma } from "@aurel/db";
 import { emailExecutor } from "./executors/email";
 import { executeWorkflow } from "./engine/executor";
 
-console.log("DATABASE_URL:", process.env.DATABASE_URL);
-
 const redisUrl = process.env.REDIS_URL;
 const connection = redisUrl
   ? new IORedis(redisUrl, {

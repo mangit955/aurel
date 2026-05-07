@@ -40,11 +40,11 @@ model Membership {
   organizationId String
   userId         String
   role           OrganizationRole
-  organization   Organization     @relation(fields: [organizationId], references: [id])
-  user           User             @relation(fields: [userId], references: [id])
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt      DateTime         @default(now())
 
-  @@unique([organizationId, userId])
+  @@unique([userId])
 }
 
 model Invite {
@@ -56,7 +56,7 @@ model Invite {
   expiresAt       DateTime
   acceptedAt      DateTime?
   invitedByUserId String?
-  organization    Organization     @relation(fields: [organizationId], references: [id])
+  organization    Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   invitedByUser   User?            @relation("InviteSentBy", fields: [invitedByUserId], references: [id])
   createdAt       DateTime         @default(now())
 
@@ -68,7 +68,7 @@ model Workflow {
   name          String
   organizationId String
   createdByUserId String?
-  organization  Organization @relation(fields: [organizationId], references: [id])
+  organization  Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   createdByUser User?       @relation("WorkflowCreatedBy", fields: [createdByUserId], references: [id])
   nodes         Json // React Flow nodes array
   edges         Json // React Flow edges array
@@ -77,17 +77,21 @@ model Workflow {
   executions    Execution[]
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+
+  @@index([organizationId, createdByUserId])
 }
 
 model Execution {
   id         String    @id @default(cuid())
   workflowId String
-  workflow   Workflow  @relation(fields: [workflowId], references: [id])
-  status     String // "queued" | "running" | "success" | "failed"
+  workflow   Workflow  @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  status     ExecutionStatus @default(QUEUED)
   input      Json // what triggered this run — CRITICAL for debugging
   logs       Json // per-node results array
   startedAt  DateTime  @default(now())
   endedAt    DateTime?
+
+  @@index([workflowId, status])
 }
 
 enum OrganizationRole {
@@ -95,4 +99,11 @@ enum OrganizationRole {
   ADMIN
   MEMBER
   VIEWER
+}
+
+enum ExecutionStatus {
+  QUEUED
+  RUNNING
+  SUCCESS
+  FAILED
 }

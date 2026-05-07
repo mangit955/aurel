@@ -17,8 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 const siteName = "aurel";
-const siteUrlRaw =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://aurel-production.up.railway.app";
+const siteUrlRaw = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 const siteUrl = siteUrlRaw.replace(/\/+$/, "");
 const description = "A visual engine for building event-driven automations.";
 

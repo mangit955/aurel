@@ -5,7 +5,6 @@ import { resolveTemplate } from "../utils/resolveTemplate";
 
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
-console.log("ENV FROM:", process.env.RESEND_FROM_EMAIL);
 export async function emailExecutor(node: any, input: any) {
   const { to, subject, body } = node.data;
   const from = node.data.from || process.env.RESEND_FROM_EMAIL;
