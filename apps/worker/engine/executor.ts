@@ -25,7 +25,7 @@ export async function executeWorkflow(
   await prisma.execution.update({
     where: { id: executionId },
     data: {
-      status: "running",
+      status: "RUNNING",
       // optional: clear logs if rerunning
       logs: [],
       endedAt: null,
@@ -107,12 +107,10 @@ export async function executeWorkflow(
         const nextNodes = adjacency.get(nodeId) || [];
         nextNodes.forEach(({ targetId, sourceHandle }) => {
           if (node.type === "ifNode" || node.type === "ifFilter") {
-        
             if (sourceHandle === (output as any).data?.branch) {
               queue.push({ nodeId: targetId, input });
             }
           } else {
-
             const nextInput = output?.data !== undefined ? output.data : output;
             queue.push({ nodeId: targetId, input: nextInput });
           }
@@ -137,11 +135,10 @@ export async function executeWorkflow(
       }
     }
 
-
     await prisma.execution.update({
       where: { id: executionId },
       data: {
-        status: "success",
+        status: "SUCCESS",
         logs: logs as any,
         endedAt: new Date(),
       },
@@ -150,7 +147,7 @@ export async function executeWorkflow(
     await prisma.execution.update({
       where: { id: executionId },
       data: {
-        status: "failed",
+        status: "FAILED",
         logs: logs as any,
         endedAt: new Date(),
       },
