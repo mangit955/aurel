@@ -76,10 +76,10 @@ worker.on("failed", async (job, err) => {
     await prisma.execution.updateMany({
       where: {
         id: executionId,
-        status: { in: ["queued", "running"] },
+        status: { in: ["QUEUED", "RUNNING"] },
       },
       data: {
-        status: "failed",
+        status: "FAILED",
         endedAt: new Date(),
       },
     });

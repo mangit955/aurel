@@ -2,12 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
 import { prisma } from "@aurel/db";
-import {
-  ArrowRight,
-  CheckCircle2,
-  Clock3,
-  XCircle,
-} from "lucide-react";
+import { ArrowRight, CheckCircle2, Clock3, XCircle } from "lucide-react";
 import Navbar from "../dashboard/Navbar";
 import {
   Table,
@@ -28,6 +23,7 @@ const statusStyles: Record<string, string> = {
   success: "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30",
   failed: "bg-red-500/15 text-red-300 border border-red-500/30",
   running: "bg-amber-500/15 text-amber-200 border border-amber-500/30",
+  queued: "bg-sky-500/15 text-sky-200 border border-sky-500/30",
 };
 
 type ExecutionRow = {
@@ -55,13 +51,13 @@ export default async function ExecutionsListPage() {
     await Promise.all([
       prisma.execution.count({ where: workflowOwnerFilter }),
       prisma.execution.count({
-        where: { ...workflowOwnerFilter, status: "success" },
+        where: { ...workflowOwnerFilter, status: "SUCCESS" },
       }),
       prisma.execution.count({
-        where: { ...workflowOwnerFilter, status: "failed" },
+        where: { ...workflowOwnerFilter, status: "FAILED" },
       }),
       prisma.execution.count({
-        where: { ...workflowOwnerFilter, status: "running" },
+        where: { ...workflowOwnerFilter, status: "RUNNING" },
       }),
       prisma.execution.findMany({
         where: workflowOwnerFilter,

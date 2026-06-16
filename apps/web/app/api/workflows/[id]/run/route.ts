@@ -58,7 +58,7 @@ export async function POST(
     const execution = await prisma.execution.create({
       data: {
         workflowId: workflow.id,
-        status: "queued",
+        status: "QUEUED",
         input: body,
         logs: [],
       },
@@ -74,7 +74,16 @@ export async function POST(
       message: "Workflow run initiated",
       executionId: execution.id,
     });
-  } catch {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  } catch (error) {
+    console.error("Failed to run workflow:", error);
+    const message =
+      error instanceof Error ? error.message : "Failed to run workflow";
+    const status =
+      message === "Unauthorized"
+        ? 401
+        : message === "Forbidden"
+          ? 403
+          : 500;
+    return NextResponse.json({ error: message }, { status });
   }
 }

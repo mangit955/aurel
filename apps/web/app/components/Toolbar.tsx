@@ -81,12 +81,20 @@ export function Toolbar({ workflowId }: { workflowId?: string }) {
         method: "POST",
       });
       if (!res.ok) {
-        throw new Error("Failed to run workflow");
+        const data = await res.json().catch(() => ({}));
+        throw new Error(
+          (data as { error?: string }).error ||
+            `Failed to run workflow (${res.status})`,
+        );
       }
       alert("Workflow run initiated successfully!");
     } catch (err) {
       console.error(err);
-      alert("Failed to run workflow. See console for details.");
+      alert(
+        err instanceof Error
+          ? err.message
+          : "Failed to run workflow. See console for details.",
+      );
     } finally {
       setIsRunning(false);
     }

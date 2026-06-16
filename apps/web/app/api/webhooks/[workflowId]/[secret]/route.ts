@@ -27,7 +27,7 @@ export async function POST(
   const execution = await prisma.execution.create({
     data: {
       workflowId: workflow.id,
-      status: "queued",
+      status: "QUEUED",
       input: body,
       logs: [],
     },
