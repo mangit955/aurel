@@ -18,6 +18,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Activity, LayoutDashboard, LogOutIcon, UserIcon } from "lucide-react";
+import { GUEST_WORKSPACE_COOKIE } from "@/lib/guest-workspace";
+
+function disableGuestWorkspace() {
+  document.cookie = `${GUEST_WORKSPACE_COOKIE}=; path=/; max-age=0; sameSite=lax`;
+}
 
 type EditorClientProps = {
   workflowId: string;
@@ -93,7 +98,10 @@ export function EditorClient({
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer"
-                onClick={() => signOut({ callbackUrl: "/" })}
+                onClick={() => {
+                  disableGuestWorkspace();
+                  void signOut({ callbackUrl: "/" });
+                }}
               >
                 <LogOutIcon />
                 Sign out

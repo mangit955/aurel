@@ -43,12 +43,12 @@ export default function LandingFeaturedStory() {
           Featured
         </p>
         <h2 className="mt-3 max-w-3xl font-mono text-3xl font-semibold leading-tight text-zinc-100 md:text-4xl">
-          Scroll through one execution timeline and see how collaboration stays
-          attached to logic.
+          Scroll through one execution timeline and see every branch attached
+          to logic.
         </h2>
         <p className="mt-4 max-w-2xl text-sm leading-7 text-zinc-400 md:text-base">
-          Aurel keeps comments, decision branches, and approvals in the same
-          place where workflows run.
+          Aurel keeps triggers, decision branches, and run output in the same
+          place where workflows execute.
         </p>
       </div>
 
@@ -86,11 +86,11 @@ export default function LandingFeaturedStory() {
             </div>
 
             <h3 className="mt-4 text-2xl font-semibold text-zinc-100 md:text-3xl">
-              Invoice approval flow
+              Invoice routing flow
             </h3>
             <p className="mt-3 max-w-md text-sm leading-7 text-zinc-400">
-              Teams can review what happened, why it branched, and who approved
-              the next step without leaving the run context.
+              Review what happened, why it branched, and which action ran next
+              without leaving the execution context.
             </p>
 
             <div className="mt-7 space-y-3">
@@ -105,7 +105,7 @@ export default function LandingFeaturedStory() {
               <div className="rounded-xl border border-white/12 bg-white/5 p-3 text-sm text-zinc-100">
                 Action:{" "}
                 <span className="text-zinc-300">
-                  request finance approval + notify Slack
+                  route high-value invoice + send email
                 </span>
               </div>
             </div>

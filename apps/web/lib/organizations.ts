@@ -1,8 +1,7 @@
 import { prisma } from "@aurel/db";
 import { auth } from "@/app/api/auth/[...nextauth]/route";
 import { cookies } from "next/headers";
-
-export const ACTIVE_ORGANIZATION_COOKIE = "aurel_active_org_id";
+import { GUEST_USER, GUEST_WORKSPACE_COOKIE } from "@/lib/guest-workspace";
 
 const roleRank = {
   VIEWER: 0,
@@ -78,15 +77,24 @@ async function requireAuthenticatedUser() {
   const session = await auth();
   const sessionUser = session?.user;
   const email = sessionUser?.email?.trim().toLowerCase();
-  if (!email) {
-    throw new Error("Unauthorized");
+  if (email) {
+    return {
+      email,
+      name: sessionUser?.name ?? null,
+      image: sessionUser?.image ?? null,
+    };
   }
 
-  return {
-    email,
-    name: sessionUser?.name ?? null,
-    image: sessionUser?.image ?? null,
-  };
+  const cookieStore = await cookies();
+  if (cookieStore.get(GUEST_WORKSPACE_COOKIE)?.value === "1") {
+    return {
+      email: GUEST_USER.email,
+      name: GUEST_USER.name,
+      image: GUEST_USER.image,
+    };
+  }
+
+  throw new Error("Unauthorized");
 }
 
 async function ensureUserRecord() {
@@ -167,11 +175,7 @@ export async function getActiveOrganizationContext(): Promise<ActiveOrganization
 
   if (!prisma) {
     const organizations = getFallbackOrganizations(user.email, user.name);
-    const cookieStore = await cookies();
-    const activeId = cookieStore.get(ACTIVE_ORGANIZATION_COOKIE)?.value;
-    const activeOrganization =
-      organizations.find((organization) => organization.id === activeId) ??
-      organizations[0];
+    const activeOrganization = organizations[0];
 
     return { user, activeOrganization, organizations };
   }
@@ -198,11 +202,7 @@ export async function getActiveOrganizationContext(): Promise<ActiveOrganization
   }
 
   const summaries = organizations.map(toOrganizationSummary);
-  const cookieStore = await cookies();
-  const activeId = cookieStore.get(ACTIVE_ORGANIZATION_COOKIE)?.value;
-  const activeOrganization =
-    summaries.find((organization) => organization.id === activeId) ??
-    summaries[0];
+  const activeOrganization = summaries[0];
 
   return {
     user,
@@ -216,23 +216,6 @@ export function hasRequiredRole(
   minimumRole: OrganizationRole,
 ) {
   return roleRank[currentRole] >= roleRank[minimumRole];
-}
-
-export async function assertOrganizationAccess(
-  organizationId: string,
-  minimumRole: OrganizationRole = "VIEWER",
-) {
-  const context = await getActiveOrganizationContext();
-  const organization = context.organizations.find((item) => item.id === organizationId);
-
-  if (!organization || !hasRequiredRole(organization.role, minimumRole)) {
-    throw new Error("Forbidden");
-  }
-
-  return {
-    ...context,
-    activeOrganization: organization,
-  };
 }
 
 export async function getWorkflowForActiveOrganization(
@@ -263,50 +246,4 @@ export async function getWorkflowForActiveOrganization(
     context,
     workflow,
   };
-}
-
-export async function createOrganization(name: string) {
-  const context = await getActiveOrganizationContext();
-
-  if (!prisma) {
-    const fallbackOrganization = {
-      id: `fallback_${Date.now()}`,
-      name,
-      slug: slugifyOrganizationName(name) || `workspace-${Date.now()}`,
-      role: "OWNER" as const,
-    };
-    const organizations = getFallbackOrganizations(context.user.email, context.user.name);
-    organizations.push(fallbackOrganization);
-    return fallbackOrganization;
-  }
-
-  const baseSlug = slugifyOrganizationName(name) || `workspace-${Date.now()}`;
-  let slug = baseSlug;
-  let suffix = 1;
-
-  while (await prisma.organization.findUnique({ where: { slug } })) {
-    suffix += 1;
-    slug = `${baseSlug}-${suffix}`;
-  }
-
-  const organization = await prisma.organization.create({
-    data: {
-      name,
-      slug,
-      memberships: {
-        create: {
-          userId: context.user.id,
-          role: "OWNER",
-        },
-      },
-    },
-    include: {
-      memberships: {
-        where: { userId: context.user.id },
-        select: { role: true },
-      },
-    },
-  });
-
-  return toOrganizationSummary(organization);
 }

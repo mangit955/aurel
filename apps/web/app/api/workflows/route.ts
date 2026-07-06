@@ -31,6 +31,10 @@ async function getPrisma() {
   }
 }
 
+function isUnauthorizedError(error: unknown) {
+  return error instanceof Error && error.message === "Unauthorized";
+}
+
 export async function GET() {
   try {
     const context = await getActiveOrganizationContext();
@@ -47,8 +51,16 @@ export async function GET() {
     });
 
     return NextResponse.json(workflows);
-  } catch {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  } catch (error) {
+    if (isUnauthorizedError(error)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    console.error("Failed to fetch workflows:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch workflows" },
+      { status: 500 },
+    );
   }
 }
 
@@ -95,7 +107,15 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(workflow);
-  } catch {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  } catch (error) {
+    if (isUnauthorizedError(error)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    console.error("Failed to create workflow:", error);
+    return NextResponse.json(
+      { error: "Failed to create workflow" },
+      { status: 500 },
+    );
   }
 }

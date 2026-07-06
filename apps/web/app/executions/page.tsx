@@ -69,10 +69,7 @@ export default async function ExecutionsListPage() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-black px-6 pb-10 text-zinc-100 md:px-10">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,0.08),transparent_40%),radial-gradient(circle_at_90%_100%,rgba(255,255,255,0.04),transparent_35%)]" />
-      <Navbar
-        organizations={organizationContext.organizations}
-        activeOrganizationId={organizationContext.activeOrganization.id}
-      />
+      <Navbar />
 
       <div className="relative mx-auto max-w-6xl pt-28">
         <section className="mb-6 rounded-xl border border-zinc-800/90 bg-zinc-900/60 p-5 shadow-[0_12px_50px_rgba(0,0,0,0.4)] backdrop-blur-sm md:p-6">

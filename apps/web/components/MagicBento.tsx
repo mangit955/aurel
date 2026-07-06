@@ -113,7 +113,7 @@ const LogicCenterNode: React.FC = () => {
   );
 };
 
-const TeamworkBeamDemo: React.FC = () => {
+const OrchestrationBeamDemo: React.FC = () => {
   const BEAM_Y_OFFSET = -4;
   const BEAM_PATH_COLOR = "rgba(161, 161, 170, 0.28)";
   const BEAM_PATH_OPACITY = 0.65;
@@ -130,9 +130,9 @@ const TeamworkBeamDemo: React.FC = () => {
   const hubRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="magic-bento-teamwork" ref={containerRef}>
-      <div className="magic-bento-teamwork-layout">
-        <div className="magic-bento-teamwork-row">
+    <div className="magic-bento-orchestration" ref={containerRef}>
+      <div className="magic-bento-orchestration-layout">
+        <div className="magic-bento-orchestration-row">
           <BeamCircle
             ref={topLeftRef}
             className="magic-bento-beam-node bg-white! size-10!"
@@ -147,7 +147,7 @@ const TeamworkBeamDemo: React.FC = () => {
           </BeamCircle>
         </div>
 
-        <div className="magic-bento-teamwork-row">
+        <div className="magic-bento-orchestration-row">
           <BeamCircle
             ref={midLeftRef}
             className="magic-bento-beam-node bg-white! size-10!"
@@ -168,7 +168,7 @@ const TeamworkBeamDemo: React.FC = () => {
           </BeamCircle>
         </div>
 
-        <div className="magic-bento-teamwork-row">
+        <div className="magic-bento-orchestration-row">
           <BeamCircle
             ref={bottomLeftRef}
             className="magic-bento-beam-node bg-white! size-10!"
@@ -781,9 +781,9 @@ const MagicBento: React.FC<BentoProps> = ({
 
       <BentoCardGrid gridRef={gridRef}>
         {cardData.map((card, index) => {
-          const isTeamworkCard = card.title === "Workflow Orchestration";
+          const isOrchestrationCard = card.title === "Workflow Orchestration";
           const isLogicCard = card.title === "Branching Logic";
-          const baseClassName = `magic-bento-card ${textAutoHide ? "magic-bento-card--text-autohide" : ""} ${enableBorderGlow ? "magic-bento-card--border-glow" : ""} ${isTeamworkCard ? "magic-bento-card--teamwork" : ""} ${isLogicCard ? "magic-bento-card--logic" : ""}`;
+          const baseClassName = `magic-bento-card ${textAutoHide ? "magic-bento-card--text-autohide" : ""} ${enableBorderGlow ? "magic-bento-card--border-glow" : ""} ${isOrchestrationCard ? "magic-bento-card--orchestration" : ""} ${isLogicCard ? "magic-bento-card--logic" : ""}`;
           const cardProps = {
             className: baseClassName,
             style: {
@@ -813,7 +813,7 @@ const MagicBento: React.FC<BentoProps> = ({
                     {card.description}
                   </p>
                   {isLogicCard && <LogicCenterNode />}
-                  {isTeamworkCard && <TeamworkBeamDemo />}
+                  {isOrchestrationCard && <OrchestrationBeamDemo />}
                 </div>
               </ParticleCard>
             );
@@ -941,7 +941,7 @@ const MagicBento: React.FC<BentoProps> = ({
                   {card.description}
                 </p>
                 {isLogicCard && <LogicCenterNode />}
-                {isTeamworkCard && <TeamworkBeamDemo />}
+                {isOrchestrationCard && <OrchestrationBeamDemo />}
               </div>
             </div>
           );

@@ -6,28 +6,37 @@ import {
   Field,
   FieldDescription,
   FieldGroup,
-  FieldSeparator,
 } from "@/components/ui/field";
 import Image from "next/image";
 import { useState } from "react";
 import { Spinner } from "./ui/spinner";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { Github } from "lucide-react";
+import { Github, UserRound } from "lucide-react";
+import { GUEST_WORKSPACE_COOKIE } from "@/lib/guest-workspace";
+
+function enableGuestWorkspace() {
+  document.cookie = `${GUEST_WORKSPACE_COOKIE}=1; path=/; max-age=2592000; sameSite=lax`;
+}
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   const [loadingProvider, setLoadingProvider] = useState<
-    "google" | "github" | null
+    "google" | "github" | "guest" | null
   >(null);
   const isLoading = loadingProvider !== null;
 
-  const handleProviderSignIn = async (provider: "google" | "github") => {
+  const handleProviderSignIn = async (
+    provider: "google" | "github" | "guest",
+  ) => {
     if (isLoading) return;
     setLoadingProvider(provider);
     try {
+      if (provider === "guest") {
+        enableGuestWorkspace();
+      }
       await signIn(provider, { callbackUrl: "/dashboard" });
     } finally {
       setLoadingProvider(null);
@@ -93,13 +102,28 @@ export function LoginForm({
                     </>
                   )}
                 </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-11 cursor-pointer justify-center border-white/15 bg-zinc-900 text-zinc-100 hover:bg-zinc-800"
+                  disabled={isLoading}
+                  aria-busy={loadingProvider === "guest"}
+                  onClick={() => handleProviderSignIn("guest")}
+                >
+                  {loadingProvider === "guest" ? (
+                    <Spinner width={18} height={18} />
+                  ) : (
+                    <>
+                      <UserRound />
+                      Continue as Guest
+                    </>
+                  )}
+                </Button>
               </Field>
 
               <FieldDescription className="text-center text-zinc-400">
-                Don&apos;t have an account?{" "}
-                <Link href="/dashboard" className="text-zinc-200">
-                  Start with dashboard
-                </Link>
+                Try Aurel instantly with a temporary guest workspace.
               </FieldDescription>
             </FieldGroup>
           </form>

@@ -12,23 +12,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
-import { WorkspaceSwitcher } from "../components/dashboard/WorkspaceSwitcher";
+import { GUEST_WORKSPACE_COOKIE } from "@/lib/guest-workspace";
+
+function disableGuestWorkspace() {
+  document.cookie = `${GUEST_WORKSPACE_COOKIE}=; path=/; max-age=0; sameSite=lax`;
+}
 
 type NavbarProps = {
   onSignIn?: () => void;
-  organizations?: {
-    id: string;
-    name: string;
-    role: string;
-  }[];
-  activeOrganizationId?: string;
 };
 
-export default function Navbar({
-  onSignIn,
-  organizations,
-  activeOrganizationId,
-}: NavbarProps) {
+export default function Navbar({ onSignIn }: NavbarProps) {
   const { data: session } = useSession();
 
   const displayName =
@@ -49,13 +43,6 @@ export default function Navbar({
         </div>
 
         <div className="pointer-events-auto flex items-center gap-3">
-          {organizations?.length && activeOrganizationId ? (
-            <WorkspaceSwitcher
-              organizations={organizations}
-              activeOrganizationId={activeOrganizationId}
-            />
-          ) : null}
-
           <Link
             href="/"
             className="h-[30px] px-2 rounded-md border border-white/25  text-white text-sm font-medium backdrop-blur-xl flex items-center justify-center hover:bg-white/20 bg-white/10 transition-colors"
@@ -101,7 +88,10 @@ export default function Navbar({
                 <DropdownMenuItem
                   className="cursor-pointer"
                   variant="destructive"
-                  onClick={() => signOut({ callbackUrl: "/" })}
+                  onClick={() => {
+                    disableGuestWorkspace();
+                    void signOut({ callbackUrl: "/" });
+                  }}
                 >
                   <LogOutIcon />
                   Log out

@@ -23,6 +23,15 @@ import {
 import Icon from "@/public/icon";
 import { Highlighter } from "@/components/ui/highlighter";
 import ColorBends from "@/components/ColorBends";
+import { GUEST_USER, GUEST_WORKSPACE_COOKIE } from "@/lib/guest-workspace";
+
+function enableGuestWorkspace() {
+  document.cookie = `${GUEST_WORKSPACE_COOKIE}=1; path=/; max-age=2592000; sameSite=lax`;
+}
+
+function disableGuestWorkspace() {
+  document.cookie = `${GUEST_WORKSPACE_COOKIE}=; path=/; max-age=0; sameSite=lax`;
+}
 
 export default function HeroBackground() {
   const router = useRouter();
@@ -68,13 +77,26 @@ export default function HeroBackground() {
       throw new Error("Enter a workflow name first.");
     }
     setIsCreatingWorkflow(true);
+    const isGuestSession =
+      session?.user?.email?.toLowerCase() === GUEST_USER.email;
+
+    if (isGuestSession) {
+      enableGuestWorkspace();
+    }
 
     try {
-      const response = await fetch("/api/workflows", {
+      const createWorkflow = () => fetch("/api/workflows", {
         method: "POST",
+        credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),
       });
+      let response = await createWorkflow();
+
+      if (response.status === 401 && isGuestSession) {
+        enableGuestWorkspace();
+        response = await createWorkflow();
+      }
 
       if (!response.ok) {
         const payload = (await response.json().catch(() => null)) as {
@@ -251,7 +273,10 @@ export default function HeroBackground() {
               <DropdownMenuItem
                 className="cursor-pointer"
                 variant="destructive"
-                onClick={() => signOut({ callbackUrl: "/" })}
+                onClick={() => {
+                  disableGuestWorkspace();
+                  void signOut({ callbackUrl: "/" });
+                }}
               >
                 <LogOutIcon />
                 Log out

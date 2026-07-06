@@ -3,7 +3,6 @@
 import Link from "next/link";
 import Icon from "@/public/icon";
 import { NoiseBackground } from "@/components/ui/noise-background";
-import { Highlighter } from "@/components/ui/highlighter";
 
 const productLinks = [
   { label: "Workflow Builder", href: "/dashboard" },
@@ -66,8 +65,8 @@ export default function LandingFooter() {
               </span>
             </div>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-zinc-400">
-              Visual backend automation for modern product teams. Design,
-              branch, and monitor workflows without writing boilerplate.
+              Visual backend automation for modern builders. Design, branch,
+              and monitor workflows without writing boilerplate.
             </p>
           </div>
 

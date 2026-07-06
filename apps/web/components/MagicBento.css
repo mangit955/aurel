@@ -216,7 +216,7 @@
   user-select: none;
 }
 
-.magic-bento-teamwork {
+.magic-bento-orchestration {
   position: relative;
   margin-top: 0;
   width: 82%;
@@ -226,7 +226,7 @@
   overflow: visible;
 }
 
-.magic-bento-teamwork-layout {
+.magic-bento-orchestration-layout {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -236,7 +236,7 @@
   padding: 0.25rem 0;
 }
 
-.magic-bento-teamwork-row {
+.magic-bento-orchestration-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -282,14 +282,14 @@
   flex: 0 0 auto;
 }
 
-.magic-bento-card--teamwork .magic-bento-card__content {
+.magic-bento-card--orchestration .magic-bento-card__content {
   flex: 1;
   align-items: center;
   justify-content: center;
 }
 
-.magic-bento-card--teamwork .magic-bento-card__title,
-.magic-bento-card--teamwork .magic-bento-card__description {
+.magic-bento-card--orchestration .magic-bento-card__title,
+.magic-bento-card--orchestration .magic-bento-card__description {
   display: none;
 }
 
