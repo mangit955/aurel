@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "pnpm --filter @aurel/db run generate",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
